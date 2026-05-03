@@ -1,11 +1,13 @@
 export default function HomePage() {
   return (
-    <main className="container" style={{ padding: "3rem 0" }}>
-      <h1 style={{ margin: 0, fontSize: "2rem" }}>BonusTracker</h1>
-      <p style={{ marginTop: "0.75rem", lineHeight: 1.6 }}>
-        Next.js App Router scaffold is ready. The rewards workflow screens will be
-        implemented in the following tasks.
-      </p>
+    <main className="container py-12">
+      <section className="rounded-2xl border bg-card p-8 text-card-foreground shadow-sm">
+        <h1 className="text-3xl">BonusTracker</h1>
+        <p className="mt-3 leading-relaxed text-muted-foreground">
+          Next.js App Router scaffold is ready. Shared style tokens now come from
+          packages/ui and are available in the web app.
+        </p>
+      </section>
     </main>
   );
 }

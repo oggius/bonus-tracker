@@ -2,6 +2,16 @@
   "name": "@bonus-tracker/ui",
   "version": "0.0.1",
   "private": true,
+  "exports": {
+    "./styles.css": "./src/styles/index.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "dependencies": {
+    "tailwindcss": "^4.1.12",
+    "tw-animate-css": "1.3.8"
+  },
   "scripts": {
     "build": "echo 'ui build placeholder for Task 2'",
     "lint": "echo 'ui lint placeholder for Task 2'",
