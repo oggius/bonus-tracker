@@ -2,12 +2,35 @@
 
 This file turns the approved plan into commit-sized tasks. Complete the tasks in order. Each task has a clear outcome, a verification step, and a suggested commit boundary.
 
+## Progress Tracker
+
+Mark a task complete only after its verification passes and the commit is created.
+
+- [x] Task 1: Bootstrap the monorepo root
+- [ ] Task 2: Create the workspace packages and base TypeScript config
+- [ ] Task 3: Scaffold the Next.js web app for Vercel
+- [ ] Task 4: Move the shared design tokens and global styles into packages/ui
+- [ ] Task 5: Extract the core UI primitives into packages/ui
+- [ ] Task 6: Add the Prisma database package and local development workflow
+- [ ] Task 7: Implement the initial Prisma schema
+- [ ] Task 8: Seed the database with v1 Ukrainian data
+- [ ] Task 9: Add simple PIN authentication and session handling
+- [ ] Task 10: Protect routes and add role-aware app shell
+- [ ] Task 11: Implement admin reward management
+- [ ] Task 12: Implement admin point award and deduction flow
+- [ ] Task 13: Implement the user balance and history screens
+- [ ] Task 14: Implement the exchange request and approval flow
+- [ ] Task 15: Add PWA support
+- [ ] Task 16: Deployment and production configuration
+- [ ] Task 17: Final cleanup and migration closeout
+
 ## Working Rules
 
 - Do one task per commit unless a task explicitly says otherwise.
 - Do not start the next task until the current task verifies cleanly.
 - Keep `_figma_design/` as the migration reference until the final cleanup task.
 - Prefer the smallest working slice that satisfies the task and passes the listed checks.
+- After verification and commit, change the matching checkbox in `Progress Tracker` from `[ ]` to `[x]`.
 
 ## Task 1: Bootstrap the monorepo root
 
