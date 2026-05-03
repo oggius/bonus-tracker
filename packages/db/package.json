@@ -1,0 +1,10 @@
+{
+  "name": "@bonus-tracker/db",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "echo 'db build placeholder for Task 2'",
+    "lint": "echo 'db lint placeholder for Task 2'",
+    "typecheck": "echo 'db typecheck placeholder for Task 2'"
+  }
+}

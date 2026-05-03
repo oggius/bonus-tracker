@@ -7,7 +7,7 @@ This file turns the approved plan into commit-sized tasks. Complete the tasks in
 Mark a task complete only after its verification passes and the commit is created.
 
 - [x] Task 1: Bootstrap the monorepo root
-- [ ] Task 2: Create the workspace packages and base TypeScript config
+- [x] Task 2: Create the workspace packages and base TypeScript config
 - [ ] Task 3: Scaffold the Next.js web app for Vercel
 - [ ] Task 4: Move the shared design tokens and global styles into packages/ui
 - [ ] Task 5: Extract the core UI primitives into packages/ui

@@ -1,0 +1,11 @@
+{
+  "name": "@bonus-tracker/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'web app scaffold comes in Task 3'",
+    "build": "echo 'web build placeholder for Task 2'",
+    "lint": "echo 'web lint placeholder for Task 2'",
+    "typecheck": "echo 'web typecheck placeholder for Task 2'"
+  }
+}

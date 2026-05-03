@@ -1,0 +1,10 @@
+{
+  "name": "@bonus-tracker/ui",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "build": "echo 'ui build placeholder for Task 2'",
+    "lint": "echo 'ui lint placeholder for Task 2'",
+    "typecheck": "echo 'ui typecheck placeholder for Task 2'"
+  }
+}
