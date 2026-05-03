@@ -10,7 +10,7 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 2: Create the workspace packages and base TypeScript config
 - [x] Task 3: Scaffold the Next.js web app for Vercel
 - [x] Task 4: Move the shared design tokens and global styles into packages/ui
-- [ ] Task 5: Extract the core UI primitives into packages/ui
+- [x] Task 5: Extract the core UI primitives into packages/ui
 - [ ] Task 6: Add the Prisma database package and local development workflow
 - [ ] Task 7: Implement the initial Prisma schema
 - [ ] Task 8: Seed the database with v1 Ukrainian data
