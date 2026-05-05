@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  role      Role
+  pinHash   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pointsLogs PointsLog[]
+  exchanges  Exchange[]
+}
+
+model PointsLog {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  delta       Int      // positive = earned, negative = deducted
+  description String
+  createdAt   DateTime @default(now())
+  createdById String?  // admin who made the entry
+}
+
+model RewardDefinition {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  cost        Int      // points required
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  exchanges Exchange[]
+}
+
+model Exchange {
+  id           String           @id @default(cuid())
+  userId       String
+  user         User             @relation(fields: [userId], references: [id])
+  rewardId     String
+  reward       RewardDefinition @relation(fields: [rewardId], references: [id])
+  costSnapshot Int              // cost at time of exchange — preserved if reward edits later
+  comment      String?          // optional note added by either party after the exchange
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
