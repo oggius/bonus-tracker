@@ -12,7 +12,7 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 4: Move the shared design tokens and global styles into packages/ui
 - [x] Task 5: Extract the core UI primitives into packages/ui
 - [x] Task 6: Add the Prisma database package and local development workflow
-- [ ] Task 7: Implement the initial Prisma schema
+- [x] Task 7: Implement the initial Prisma schema
 - [ ] Task 8: Seed the database with v1 Ukrainian data
 - [ ] Task 9: Add simple PIN authentication and session handling
 - [ ] Task 10: Protect routes and add role-aware app shell
