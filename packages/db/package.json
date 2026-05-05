@@ -5,6 +5,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "prisma": {
+    "seed": "node_modules/.bin/tsx prisma/seed.ts"
+  },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
@@ -13,12 +16,15 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
-    "@prisma/client": "^6.7.0"
+    "@prisma/client": "^6.7.0",
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.0.0",
     "prisma": "^6.7.0",
     "tsx": "^4.19.4",
     "typescript": "^5.9.3"
