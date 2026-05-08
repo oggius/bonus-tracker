@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { db } from "../../lib/db";
 import { getCurrentUser } from "../../lib/auth";
+import { getUserBalance } from "../../lib/balance";
 
 const POINT_ACTION_TYPES = new Set(["award", "deduct"]);
 
@@ -15,24 +16,6 @@ async function assertAdmin() {
   }
 
   return currentUser;
-}
-
-async function getUserBalance(userId: string) {
-  const [pointsAgg, exchangesAgg] = await Promise.all([
-    db.pointsLog.aggregate({
-      where: { userId },
-      _sum: { delta: true },
-    }),
-    db.exchange.aggregate({
-      where: { userId },
-      _sum: { costSnapshot: true },
-    }),
-  ]);
-
-  const pointsTotal = pointsAgg._sum.delta ?? 0;
-  const exchangeTotal = exchangesAgg._sum.costSnapshot ?? 0;
-
-  return pointsTotal - exchangeTotal;
 }
 
 export async function createPointsLogAction(formData: FormData) {

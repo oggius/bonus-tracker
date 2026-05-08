@@ -18,7 +18,7 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 10: Protect routes and add role-aware app shell
 - [x] Task 11: Implement admin reward management
 - [x] Task 12: Implement admin point award and deduction flow
-- [ ] Task 13: Implement the user balance and history screens
+- [x] Task 13: Implement the user balance and history screens
 - [ ] Task 14: Implement the exchange request and approval flow
 - [ ] Task 15: Add PWA support
 - [ ] Task 16: Deployment and production configuration
