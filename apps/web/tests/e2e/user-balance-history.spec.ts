@@ -42,7 +42,7 @@ test.describe("User balance and history", () => {
       .first();
 
     await expect(historyEntry).toBeVisible();
-    await expect(historyEntry.getByText("+5 очок")).toBeVisible();
+    await expect(historyEntry).toContainText("+5");
   });
 
   test("keeps balance and history after refresh", async ({ page }) => {

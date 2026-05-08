@@ -59,6 +59,16 @@ async function awardPointsAsAdmin(
   ).toBeVisible();
 }
 
+async function exchangeRewardAsUser(
+  page: import("@playwright/test").Page,
+  rewardId: string
+) {
+  await page.getByTestId("user-nav-shop").click();
+  await page.getByTestId(`user-reward-item-${rewardId}`).click();
+  await expect(page.getByText("Впевнений?")).toBeVisible();
+  await page.getByRole("button", { name: "Так!" }).click();
+}
+
 test.describe("User direct exchange flow", () => {
   test("user can directly exchange points and balance is updated", async ({ page }) => {
     const rewardName = uniqueText("Exchange Reward");
@@ -70,9 +80,10 @@ test.describe("User direct exchange flow", () => {
 
     await loginAsUser(page);
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
-    await page.getByTestId("user-nav-shop").click();
+    await exchangeRewardAsUser(page, rewardId);
 
-    await page.getByTestId(`exchange-submit-button-${rewardId}`).click();
+    await page.getByTestId("user-nav-balance").click();
+    await expect(page.getByTestId("user-current-balance")).toBeVisible();
     await page.getByTestId("user-nav-history").click();
 
     const exchangeHistoryEntry = page
@@ -81,50 +92,25 @@ test.describe("User direct exchange flow", () => {
       .first();
 
     await expect(exchangeHistoryEntry).toBeVisible();
-    await expect(exchangeHistoryEntry.getByText("-2 очок")).toBeVisible();
-    await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    await expect(exchangeHistoryEntry).toContainText("-2");
   });
 
-  test("user can edit exchange comment and it persists after refresh", async ({ page }) => {
-    const rewardName = uniqueText("Comment Reward");
-    const seedDescription = uniqueText("Seed points for comment");
-    const updatedComment = uniqueText("Updated exchange comment");
+  test("ineligible rewards are disabled when user has insufficient balance", async ({ page }) => {
+    const rewardName = uniqueText("Expensive Reward");
+    const seedDescription = uniqueText("Seed points for eligibility");
 
     await loginAsAdmin(page);
-    const rewardId = await createRewardAsAdmin(page, rewardName, 1);
+    const rewardId = await createRewardAsAdmin(page, rewardName, 999999);
     await awardPointsAsAdmin(page, 3, seedDescription);
 
     await loginAsUser(page);
     await page.getByTestId("user-nav-shop").click();
-    await page.getByTestId(`exchange-submit-button-${rewardId}`).click();
 
-    const exchangeCard = page
-      .locator('[data-testid^="user-exchange-item-"]')
-      .filter({ hasText: rewardName })
-      .first();
+    const rewardTile = page.getByTestId(`user-reward-item-${rewardId}`);
+    await expect(rewardTile).toBeDisabled();
 
-    await expect(exchangeCard).toBeVisible();
-
-    const commentInput = exchangeCard.locator('input[name="comment"]');
-    await commentInput.fill(updatedComment);
-    await exchangeCard.getByRole("button", { name: "Зберегти коментар" }).click();
-
-    await page.getByTestId("user-nav-history").click();
-    const historyWithComment = page
-      .locator('[data-testid^="user-history-item-"]')
-      .filter({ hasText: updatedComment })
-      .first();
-
-    await expect(historyWithComment).toBeVisible();
-
-    await page.reload();
-
-    const persistedHistoryWithComment = page
-      .locator('[data-testid^="user-history-item-"]')
-      .filter({ hasText: updatedComment })
-      .first();
-
-    await expect(persistedHistoryWithComment).toContainText(updatedComment);
+    await rewardTile.click({ force: true });
+    await expect(page.getByText("Впевнений?")).toHaveCount(0);
   });
 
   test("exchange history keeps cost snapshot after reward cost edit", async ({ page }) => {
@@ -136,7 +122,7 @@ test.describe("User direct exchange flow", () => {
     await awardPointsAsAdmin(page, 4, seedDescription);
 
     await loginAsUser(page);
-    await page.getByTestId(`exchange-submit-button-${rewardId}`).click();
+    await exchangeRewardAsUser(page, rewardId);
 
     await loginAsAdmin(page);
     await page.goto(`/admin/rewards/${rewardId}/edit`);
@@ -153,6 +139,6 @@ test.describe("User direct exchange flow", () => {
       .first();
 
     await expect(exchangeHistoryEntry).toBeVisible();
-    await expect(exchangeHistoryEntry.getByText("-2 очок")).toBeVisible();
+    await expect(exchangeHistoryEntry).toContainText("-2");
   });
 });

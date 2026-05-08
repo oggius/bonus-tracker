@@ -40,11 +40,28 @@ test.describe("Admin Reward Management", () => {
   });
 
   test("should edit an existing reward", async ({ page }) => {
-    await page.goto("/admin/rewards");
+    const rewardName = uniqueName("Editable Reward");
 
-    const firstRewardCard = page.locator('[data-testid^="reward-item-"]').first();
-    const rewardTestId = await firstRewardCard.getAttribute("data-testid");
+    await page.goto("/admin/rewards");
+    await page.getByTestId("create-reward-button").click();
+    await expect(page).toHaveURL("/admin/rewards/create");
+
+    await page.getByTestId("reward-name-input").fill(rewardName);
+    await page.getByTestId("reward-cost-input").fill("5");
+    await page.getByTestId("reward-description-input").fill("Editable reward description");
+    await page.getByTestId("reward-submit-button").click();
+
+    await expect(page).toHaveURL("/admin/rewards");
+
+    const rewardCard = page
+      .locator('[data-testid^="reward-item-"]')
+      .filter({ hasText: rewardName })
+      .first();
+    await expect(rewardCard).toBeVisible();
+
+    const rewardTestId = await rewardCard.getAttribute("data-testid");
     const rewardId = rewardTestId?.replace("reward-item-", "");
+    expect(rewardId).toBeTruthy();
 
     await page.getByTestId(`edit-reward-button-${rewardId}`).click();
     await expect(page).toHaveURL(`/admin/rewards/${rewardId}/edit`);

@@ -5,7 +5,8 @@ const repoRoot = path.resolve(__dirname, "../..");
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  fullyParallel: true,
+  fullyParallel: false,
+  workers: 1,
   timeout: 30_000,
   retries: 0,
   use: {
