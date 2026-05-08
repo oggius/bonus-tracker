@@ -7,7 +7,7 @@ import {
   Wallet,
   IceCream,
   Film,
-  Ticket,
+  Gamepad2,
 } from "lucide-react";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from "@bonus-tracker/ui";
 
@@ -29,7 +29,7 @@ const SAMPLE_TRANSACTIONS = [
     id: "2",
     type: "spend" as const,
     points: 1,
-    description: "30 хв YouTube",
+    description: "20 хв YouTube",
     date: "2026-05-02T15:00:00",
     reward: "youtube" as const,
   },
@@ -54,7 +54,7 @@ const SAMPLE_TRANSACTIONS = [
 const REWARDS = [
   {
     id: "youtube",
-    label: "30 хв YouTube",
+    label: "20 хв YouTube",
     cost: 1,
     icon: Youtube,
     colors: "from-red-100 to-red-200 border-red-300 text-red-800",
@@ -62,7 +62,7 @@ const REWARDS = [
   },
   {
     id: "money",
-    label: "20 грн кишенькових",
+    label: "30 грн кишенькових",
     cost: 1,
     icon: Wallet,
     colors: "from-green-100 to-emerald-200 border-green-300 text-green-800",
@@ -79,18 +79,18 @@ const REWARDS = [
   {
     id: "cinema",
     label: "Похід в кіно",
-    cost: 1,
+    cost: 3,
     icon: Film,
     colors: "from-purple-100 to-purple-200 border-purple-300 text-purple-800",
     iconColor: "text-purple-600",
   },
   {
-    id: "zoo",
-    label: "Похід в зоопарк",
-    cost: 1,
-    icon: Ticket,
-    colors: "from-blue-100 to-blue-200 border-blue-300 text-blue-800",
-    iconColor: "text-blue-600",
+    id: "gaming",
+    label: "Година спільної гри",
+    cost: 5,
+    icon: Gamepad2,
+    colors: "from-blue-100 to-indigo-200 border-indigo-300 text-indigo-800",
+    iconColor: "text-indigo-600",
   },
 ];
 
@@ -100,7 +100,7 @@ function RewardIcon({ reward }: { reward?: string }) {
   if (reward === "money") return <Wallet className="text-green-600" size={size} />;
   if (reward === "icecream") return <IceCream className="text-pink-600" size={size} />;
   if (reward === "cinema") return <Film className="text-purple-600" size={size} />;
-  if (reward === "zoo") return <Ticket className="text-blue-600" size={size} />;
+  if (reward === "gaming") return <Gamepad2 className="text-indigo-600" size={size} />;
   return <Star className="text-yellow-400 fill-yellow-400" size={size} />;
 }
 

@@ -348,20 +348,20 @@ Manual check:
 
 Suggested commit: `feat: add user balance and history views`
 
-## Task 14: Implement the exchange request and approval flow
+## Task 14: Implement the direct exchange flow
 
-Goal: let the child request bonuses and keep parental control over approval.
+Goal: let the child exchange points for bonuses immediately without an approval step.
 
 Do:
 - add the User reward catalog screen
-- allow the User to request an exchange
-- persist requests in `Exchange`
-- add Admin approval or rejection actions
-- update the derived balance only through approved server-side mutations
+- allow the User to perform an exchange directly
+- persist exchanges in `Exchange` with `costSnapshot`
+- allow optional exchange comment editing after completion
+- update the derived balance through server-side mutations
 
 Done when:
-- User can create a reward request
-- Admin can approve or reject it
+- User can create an exchange directly
+- exchange history includes optional comments
 - reward history stays correct even after reward definition edits
 
 Verify:
@@ -370,9 +370,10 @@ pnpm --filter web build
 ```
 
 Manual check:
-- request a reward, approve it as Admin, then confirm the User balance and history update correctly
+- perform an exchange as User and confirm the balance and history update correctly
+- add or edit an exchange comment and confirm it persists
 
-Suggested commit: `feat: add exchange request and approval flow`
+Suggested commit: `feat: add direct exchange flow`
 
 ## Task 15: Add PWA support
 
