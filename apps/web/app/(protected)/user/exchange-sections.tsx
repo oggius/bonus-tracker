@@ -17,7 +17,7 @@ import {
 import { Button, Card, Input, Label } from "@bonus-tracker/ui";
 
 import { logoutAction } from "../../actions/auth";
-import { createExchangeAction, updateExchangeCommentAction } from "../../actions/exchanges";
+import { createExchangeAction } from "../../actions/exchanges";
 
 const SAVED_PIN_STORAGE_KEY = "bonus_tracker_saved_pin";
 const PENDING_PIN_SESSION_KEY = "bonus_tracker_pending_pin";
@@ -144,6 +144,7 @@ function formatPointsLabel(points: number) {
 export function ExchangeSections({ balance, history, rewards, exchanges }: ExchangeSectionsProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmingRewardId, setConfirmingRewardId] = useState<string | null>(null);
 
   // Promote pending PIN (stored in sessionStorage at login) to localStorage
   // only when the user lands on the USER page, never for admin.
@@ -157,27 +158,16 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
   const [error, setError] = useState<string | null>(null);
   const [screen, setScreen] = useState<UserScreen>("balance");
 
-  const handleCreateExchange = async (formData: FormData) => {
+  const handleConfirmExchange = async (rewardId: string) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
+      const formData = new FormData();
+      formData.append("rewardId", rewardId);
       await createExchangeAction(formData);
       router.refresh();
-      setIsSubmitting(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Сталася помилка");
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleUpdateComment = async (formData: FormData) => {
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      await updateExchangeCommentAction(formData);
-      router.refresh();
+      setConfirmingRewardId(null);
       setIsSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Сталася помилка");
@@ -276,57 +266,67 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
           <section className="mx-auto w-full max-w-xl space-y-4">
             <h2 className="text-center text-5xl font-semibold text-gray-900">Магазин бонусів</h2>
 
+            {/* Available Balance Card */}
+            <Card className="rounded-[30px] border border-gray-200 bg-white px-6 py-8 shadow-lg">
+              <div className="text-center">
+                <p className="mb-2 text-3xl font-medium text-gray-600">Доступно очок</p>
+                <div className="mb-2 flex items-center justify-center gap-3">
+                  <Star className="h-12 w-12 fill-yellow-300 text-yellow-300" />
+                  <p className="text-7xl font-normal text-gray-900">{balance}</p>
+                </div>
+              </div>
+            </Card>
+
             {rewards.length ? (
               <div className="space-y-3" data-testid="user-reward-catalog">
                 {rewards.map((reward, index) => {
                   const style = SHOP_CARD_STYLES[index % SHOP_CARD_STYLES.length];
+                  const isEligible = reward.cost <= balance;
 
                   return (
-                    <Card
-                      key={reward.id}
-                      className="rounded-3xl border p-4 shadow-sm"
-                      style={{
-                        backgroundImage: style.gradient,
-                        borderColor: style.borderColor,
-                      }}
-                      data-testid={`user-reward-item-${reward.id}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="rounded-xl bg-white/70 p-3">
-                          <style.Icon className={`h-6 w-6 ${style.icon}`} />
+                    <div key={reward.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isEligible) {
+                            setConfirmingRewardId(reward.id);
+                          }
+                        }}
+                        disabled={!isEligible}
+                        className={`w-full rounded-3xl border p-4 shadow-sm transition ${
+                          isEligible ? "cursor-pointer hover:shadow-md" : "cursor-not-allowed opacity-50"
+                        }`}
+                        style={{
+                          backgroundImage: isEligible ? style.gradient : "linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 100%)",
+                          borderColor: isEligible ? style.borderColor : "#d1d5db",
+                        }}
+                        data-testid={`user-reward-item-${reward.id}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`rounded-xl p-3 ${
+                            isEligible ? "bg-white/70" : "bg-gray-300/50"
+                          }`}>
+                            <style.Icon className={`h-6 w-6 ${
+                              isEligible ? style.icon : "text-gray-400"
+                            }`} />
+                          </div>
+                          <div className="min-w-0 flex-1 text-left">
+                            <p className={`truncate text-2xl font-semibold ${
+                              isEligible ? style.text : "text-gray-500"
+                            }`}>{reward.name}</p>
+                            <p className={`text-lg ${
+                              isEligible ? "text-gray-600" : "text-gray-400"
+                            }`}>Коштує {formatPointsLabel(reward.cost)}</p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className={`text-4xl font-medium ${
+                              isEligible ? style.text : "text-gray-400"
+                            }`}>{reward.cost}</span>
+                            <Star className="h-6 w-6 fill-yellow-300 text-yellow-300" />
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className={`truncate text-2xl font-semibold ${style.text}`}>{reward.name}</p>
-                          <p className="text-lg text-gray-600">Коштує {formatPointsLabel(reward.cost)}</p>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className={`text-4xl font-medium ${style.text}`}>{reward.cost}</span>
-                          <Star className="h-6 w-6 fill-yellow-300 text-yellow-300" />
-                        </div>
-                      </div>
-
-                      <form action={handleCreateExchange} className="mt-3 space-y-2">
-                        <input type="hidden" name="rewardId" value={reward.id} />
-                        <div className="space-y-1">
-                          <Label htmlFor={`reward-comment-${reward.id}`}>Коментар (необов'язково)</Label>
-                          <Input
-                            id={`reward-comment-${reward.id}`}
-                            name="comment"
-                            placeholder="Наприклад: Хочу на вихідних"
-                            disabled={isSubmitting}
-                            data-testid={`exchange-comment-input-${reward.id}`}
-                          />
-                        </div>
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className="h-12 rounded-2xl bg-black px-6 text-white hover:bg-black/90"
-                          data-testid={`exchange-submit-button-${reward.id}`}
-                        >
-                          {isSubmitting ? "Обробка..." : "Обміняти"}
-                        </Button>
-                      </form>
-                    </Card>
+                      </button>
+                    </div>
                   );
                 })}
               </div>
@@ -334,52 +334,37 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
               <p className="text-center text-base text-gray-500">Зараз немає активних нагород.</p>
             )}
 
-            <section className="space-y-3">
-              <h3 className="text-2xl font-semibold text-gray-900">Мої обміни</h3>
+            {/* Confirmation Dialog */}
+            {confirmingRewardId && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+                <Card className="w-full max-w-xs rounded-[30px] border border-gray-200 bg-white p-6 shadow-lg">
+                  <div className="space-y-6">
+                    <div className="text-center">
+                      <p className="text-3xl font-semibold text-gray-900">Впевнений?</p>
+                    </div>
 
-              {exchanges.length ? (
-                <div className="space-y-3" data-testid="user-exchanges-list">
-                  {exchanges.map((exchange) => (
-                    <Card
-                      key={exchange.id}
-                      className="rounded-2xl border border-gray-200 bg-white p-4"
-                      data-testid={`user-exchange-item-${exchange.id}`}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-xl font-semibold text-gray-900">{exchange.rewardName}</p>
-                        <p className="text-xl font-semibold text-red-600">-{exchange.costSnapshot}</p>
-                      </div>
-
-                      <form action={handleUpdateComment} className="mt-3 space-y-2">
-                        <input type="hidden" name="exchangeId" value={exchange.id} />
-                        <div className="space-y-1">
-                          <Label htmlFor={`exchange-comment-${exchange.id}`}>Коментар</Label>
-                          <Input
-                            id={`exchange-comment-${exchange.id}`}
-                            name="comment"
-                            defaultValue={exchange.comment ?? ""}
-                            placeholder="Додайте або оновіть коментар"
-                            disabled={isSubmitting}
-                            data-testid={`exchange-edit-comment-input-${exchange.id}`}
-                          />
-                        </div>
-                        <Button
-                          type="submit"
-                          variant="outline"
-                          disabled={isSubmitting}
-                          className="h-11 rounded-xl"
-                          data-testid={`exchange-edit-comment-submit-${exchange.id}`}
-                        >
-                          {isSubmitting ? "Збереження..." : "Зберегти коментар"}
-                        </Button>
-                      </form>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-base text-gray-500">Обмінів поки немає.</p>
-              )}
-            </section>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmExchange(confirmingRewardId)}
+                        disabled={isSubmitting}
+                        className="flex-1 rounded-2xl bg-green-500 px-4 py-3 text-lg font-semibold text-white transition hover:bg-green-600 disabled:opacity-50"
+                      >
+                        {isSubmitting ? "Обробка..." : "Так!"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingRewardId(null)}
+                        disabled={isSubmitting}
+                        className="flex-1 rounded-2xl border border-gray-300 bg-white px-4 py-3 text-lg font-semibold text-gray-900 transition hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Передумав
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
           </section>
         ) : null}
 
