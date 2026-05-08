@@ -28,6 +28,9 @@ test.describe("User balance and history", () => {
     await page.getByTestId("points-amount-input").fill("5");
     await page.getByTestId("points-description-input").fill(description);
     await page.getByTestId("points-submit-button").click();
+    await expect(
+      page.locator('[data-testid^="points-log-"]').filter({ hasText: description }).first()
+    ).toBeVisible();
 
     await loginAsUser(page);
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
@@ -50,6 +53,9 @@ test.describe("User balance and history", () => {
     await page.getByTestId("points-amount-input").fill("3");
     await page.getByTestId("points-description-input").fill(description);
     await page.getByTestId("points-submit-button").click();
+    await expect(
+      page.locator('[data-testid^="points-log-"]').filter({ hasText: description }).first()
+    ).toBeVisible();
 
     await loginAsUser(page);
 

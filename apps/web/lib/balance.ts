@@ -45,6 +45,7 @@ export async function getUserHistory(userId: string): Promise<UserHistoryItem[]>
         id: true,
         createdAt: true,
         costSnapshot: true,
+        comment: true,
         reward: {
           select: {
             name: true,
@@ -62,13 +63,20 @@ export async function getUserHistory(userId: string): Promise<UserHistoryItem[]>
     type: "POINTS",
   }));
 
-  const exchangeItems: UserHistoryItem[] = exchanges.map((exchange) => ({
-    id: exchange.id,
-    createdAt: exchange.createdAt,
-    description: `Обмін на: ${exchange.reward.name}`,
-    delta: -exchange.costSnapshot,
-    type: "EXCHANGE",
-  }));
+  const exchangeItems: UserHistoryItem[] = exchanges.map((exchange) => {
+    const baseDescription = `Обмін на: ${exchange.reward.name}`;
+    const description = exchange.comment
+      ? `${baseDescription} (${exchange.comment})`
+      : baseDescription;
+
+    return {
+      id: exchange.id,
+      createdAt: exchange.createdAt,
+      description,
+      delta: -exchange.costSnapshot,
+      type: "EXCHANGE",
+    };
+  });
 
   return [...pointItems, ...exchangeItems].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()

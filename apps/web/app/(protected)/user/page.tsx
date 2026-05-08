@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "../../../lib/auth";
+import { db } from "../../../lib/db";
 import { getUserBalance, getUserHistory } from "../../../lib/balance";
+import { ExchangeSections } from "./exchange-sections";
 
 export default async function UserPage() {
   const currentUser = await getCurrentUser();
@@ -14,10 +16,41 @@ export default async function UserPage() {
     redirect("/admin");
   }
 
-  const [balance, history] = await Promise.all([
+  const [balance, history, rewards, exchanges] = await Promise.all([
     getUserBalance(currentUser.id),
     getUserHistory(currentUser.id),
+    db.rewardDefinition.findMany({
+      where: { active: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        cost: true,
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    db.exchange.findMany({
+      where: { userId: currentUser.id },
+      select: {
+        id: true,
+        costSnapshot: true,
+        comment: true,
+        reward: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
   ]);
+
+  const exchangeItems = exchanges.map((exchange) => ({
+    id: exchange.id,
+    rewardName: exchange.reward.name,
+    costSnapshot: exchange.costSnapshot,
+    comment: exchange.comment,
+  }));
 
   return (
     <section className="space-y-6">
@@ -30,6 +63,8 @@ export default async function UserPage() {
         <p className="text-sm text-muted-foreground">Поточний баланс</p>
         <p className="text-3xl font-bold">{balance} очок</p>
       </div>
+
+      <ExchangeSections rewards={rewards} exchanges={exchangeItems} />
 
       <div className="space-y-3">
         <h3 className="text-lg font-medium">Історія операцій</h3>
