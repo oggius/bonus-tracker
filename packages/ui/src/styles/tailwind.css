@@ -1,7 +1,7 @@
 @import "tailwindcss" source(none);
 
 /* Scan both the consuming web app and this package for utility classes. */
-@source "../../../apps/web/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../../../../apps/web/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../../**/*.{js,ts,jsx,tsx,mdx}";
 
 @import "tw-animate-css";

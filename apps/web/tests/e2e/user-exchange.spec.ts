@@ -70,8 +70,10 @@ test.describe("User direct exchange flow", () => {
 
     await loginAsUser(page);
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    await page.getByTestId("user-nav-shop").click();
 
     await page.getByTestId(`exchange-submit-button-${rewardId}`).click();
+    await page.getByTestId("user-nav-history").click();
 
     const exchangeHistoryEntry = page
       .locator('[data-testid^="user-history-item-"]')
@@ -93,6 +95,7 @@ test.describe("User direct exchange flow", () => {
     await awardPointsAsAdmin(page, 3, seedDescription);
 
     await loginAsUser(page);
+    await page.getByTestId("user-nav-shop").click();
     await page.getByTestId(`exchange-submit-button-${rewardId}`).click();
 
     const exchangeCard = page
@@ -106,6 +109,7 @@ test.describe("User direct exchange flow", () => {
     await commentInput.fill(updatedComment);
     await exchangeCard.getByRole("button", { name: "Зберегти коментар" }).click();
 
+    await page.getByTestId("user-nav-history").click();
     const historyWithComment = page
       .locator('[data-testid^="user-history-item-"]')
       .filter({ hasText: updatedComment })
@@ -141,6 +145,7 @@ test.describe("User direct exchange flow", () => {
     await expect(page).toHaveURL("/admin/rewards");
 
     await loginAsUser(page);
+    await page.getByTestId("user-nav-history").click();
 
     const exchangeHistoryEntry = page
       .locator('[data-testid^="user-history-item-"]')

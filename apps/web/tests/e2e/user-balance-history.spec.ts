@@ -34,6 +34,7 @@ test.describe("User balance and history", () => {
 
     await loginAsUser(page);
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    await page.getByTestId("user-nav-history").click();
 
     const historyEntry = page
       .locator('[data-testid^="user-history-item-"]')
@@ -58,13 +59,16 @@ test.describe("User balance and history", () => {
     ).toBeVisible();
 
     await loginAsUser(page);
+    await page.getByTestId("user-nav-history").click();
 
     const historyEntry = page
       .locator('[data-testid^="user-history-item-"]')
       .filter({ hasText: description })
       .first();
 
+    await page.getByTestId("user-nav-balance").click();
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    await page.getByTestId("user-nav-history").click();
     await expect(historyEntry).toBeVisible();
 
     await page.reload();
@@ -74,7 +78,9 @@ test.describe("User balance and history", () => {
       .filter({ hasText: description })
       .first();
 
+    await page.getByTestId("user-nav-balance").click();
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    await page.getByTestId("user-nav-history").click();
     await expect(persistedEntry).toBeVisible();
   });
 });

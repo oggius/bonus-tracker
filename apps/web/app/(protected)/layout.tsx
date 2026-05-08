@@ -18,6 +18,10 @@ export default async function ProtectedLayout({ children }: ProtectedLayoutProps
     redirect("/");
   }
 
+  if (currentUser.role === "USER") {
+    return <div className="min-h-screen bg-[#f3f4f6]">{children}</div>;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
