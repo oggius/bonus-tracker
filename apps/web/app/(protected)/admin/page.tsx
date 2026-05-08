@@ -36,9 +36,14 @@ export default async function AdminPage() {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Управління очками</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">Управління очками</h3>
+          <Link href="/admin/points">
+            <Button variant="outline" data-testid="manage-points-button">Керувати очками</Button>
+          </Link>
+        </div>
         <p className="text-sm text-muted-foreground">
-          У наступних задачах тут з'являться функції нарахування та списання очок.
+          Нараховуйте або списуйте очки з серверною валідацією та історією операцій.
         </p>
       </div>
     </section>
