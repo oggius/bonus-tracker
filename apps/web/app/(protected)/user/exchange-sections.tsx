@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Film,
   History,
   IceCream,
+  LogOut,
   Plus,
   ShoppingBag,
   Star,
@@ -16,7 +17,11 @@ import {
 
 import { Button, Card, Input, Label } from "@bonus-tracker/ui";
 
+import { logoutAction } from "../../actions/auth";
 import { createExchangeAction, updateExchangeCommentAction } from "../../actions/exchanges";
+
+const SAVED_PIN_STORAGE_KEY = "bonus_tracker_saved_pin";
+const PENDING_PIN_SESSION_KEY = "bonus_tracker_pending_pin";
 
 type RewardItem = {
   id: string;
@@ -140,6 +145,16 @@ function formatPointsLabel(points: number) {
 export function ExchangeSections({ balance, history, rewards, exchanges }: ExchangeSectionsProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Promote pending PIN (stored in sessionStorage at login) to localStorage
+  // only when the user lands on the USER page, never for admin.
+  useEffect(() => {
+    const pending = sessionStorage.getItem(PENDING_PIN_SESSION_KEY);
+    if (pending && /^\d{4}$/.test(pending)) {
+      localStorage.setItem(SAVED_PIN_STORAGE_KEY, pending);
+    }
+    sessionStorage.removeItem(PENDING_PIN_SESSION_KEY);
+  }, []);
   const [error, setError] = useState<string | null>(null);
   const [screen, setScreen] = useState<UserScreen>("balance");
 
@@ -425,7 +440,7 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
           bottom: 0,
         }}
       >
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-2 px-3 py-2">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 px-3 py-2">
           <button
             type="button"
             onClick={() => setScreen("balance")}
@@ -470,6 +485,22 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
             <History className="h-5 w-5" />
             Історія
           </button>
+          <form
+            action={logoutAction}
+            className="w-full"
+            onSubmit={() => {
+              localStorage.removeItem(SAVED_PIN_STORAGE_KEY);
+            }}
+          >
+            <button
+              type="submit"
+              data-testid="user-nav-logout"
+              className="flex w-full flex-col items-center rounded-xl px-2 py-2 text-xs text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
+            >
+              <LogOut className="h-5 w-5" />
+              Вийти
+            </button>
+          </form>
         </div>
       </nav>
     </div>

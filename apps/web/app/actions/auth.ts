@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { findUserByPin, getRoleHomePath } from "../../lib/auth";
 import { SESSION_COOKIE_NAME, signSessionToken } from "../../lib/session";
 
+const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
 export async function loginWithPinAction(formData: FormData) {
   const pin = String(formData.get("pin") ?? "").trim();
 
@@ -30,7 +32,7 @@ export async function loginWithPinAction(formData: FormData) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
   redirect(getRoleHomePath(user.role));

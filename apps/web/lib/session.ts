@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import type { Role } from "@bonus-tracker/db";
 
 export const SESSION_COOKIE_NAME = "bonus_tracker_session";
+const SESSION_EXPIRATION = "365d";
 
 export type SessionPayload = JWTPayload & {
   sub: string;
@@ -26,7 +27,7 @@ export async function signSessionToken(payload: {
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(payload.userId)
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(SESSION_EXPIRATION)
     .sign(getSessionKey());
 }
 
