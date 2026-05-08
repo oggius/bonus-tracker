@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { findUserByPin } from "../../lib/auth";
+import { findUserByPin, getRoleHomePath } from "../../lib/auth";
 import { SESSION_COOKIE_NAME, signSessionToken } from "../../lib/session";
 
 export async function loginWithPinAction(formData: FormData) {
@@ -33,7 +33,7 @@ export async function loginWithPinAction(formData: FormData) {
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  redirect("/");
+  redirect(getRoleHomePath(user.role));
 }
 
 export async function logoutAction() {

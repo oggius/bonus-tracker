@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm run test:unit && pnpm run test:e2e",
+    "test:unit": "vitest run tests/unit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@bonus-tracker/db": "workspace:*",
@@ -20,6 +23,7 @@
     "react-dom": "19.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.15.17",
@@ -27,6 +31,7 @@
     "@types/react-dom": "^19.1.2",
     "postcss": "^8.4.31",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
   }
 }

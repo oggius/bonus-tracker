@@ -15,8 +15,8 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 7: Implement the initial Prisma schema
 - [x] Task 8: Seed the database with v1 Ukrainian data
 - [x] Task 9: Add simple PIN authentication and session handling
-- [ ] Task 10: Protect routes and add role-aware app shell
-- [ ] Task 11: Implement admin reward management
+- [x] Task 10: Protect routes and add role-aware app shell
+- [x] Task 11: Implement admin reward management
 - [ ] Task 12: Implement admin point award and deduction flow
 - [ ] Task 13: Implement the user balance and history screens
 - [ ] Task 14: Implement the exchange request and approval flow
@@ -30,6 +30,8 @@ Mark a task complete only after its verification passes and the commit is create
 - Do not start the next task until the current task verifies cleanly.
 - Keep `_figma_design/` as the migration reference until the final cleanup task.
 - Prefer the smallest working slice that satisfies the task and passes the listed checks.
+- For every task, done means relevant automated tests pass (favor e2e/integration; add unit tests only for critical business logic).
+- Each business-logic task must add or update tests covering the new behavior.
 - After verification and commit, change the matching checkbox in `Progress Tracker` from `[ ]` to `[x]`.
 
 ## Task 1: Bootstrap the monorepo root
@@ -285,20 +287,20 @@ Do:
 - validate server input
 - persist via Prisma-backed server mutations
 - show current cost in points and active state
+- add e2e tests covering admin CRUD workflows
 
 Done when:
 - Admin can manage reward definitions from the UI
 - changes persist after refresh
+- e2e tests pass
 
 Verify:
 ```bash
-pnpm --filter web build
+pnpm --filter @bonus-tracker/web test:e2e
+pnpm --filter @bonus-tracker/web test:unit
 ```
 
-Manual check:
-- create, edit, deactivate, and reload the rewards screen
-
-Suggested commit: `feat: add admin reward crud`
+Suggested commit: `feat: add admin reward crud with e2e tests`
 
 ## Task 12: Implement admin point award and deduction flow
 
@@ -309,20 +311,20 @@ Do:
 - persist to `PointsLog`
 - record who performed the action
 - block invalid operations and validate the payload
+- add e2e tests covering point mutations
 
 Done when:
 - Admin can award points and deduct points
 - the resulting history persists after refresh
+- e2e tests pass
 
 Verify:
 ```bash
-pnpm --filter web build
+pnpm --filter @bonus-tracker/web test:e2e
+pnpm --filter @bonus-tracker/web test:unit
 ```
 
-Manual check:
-- award points, deduct points, and confirm the history reflects both operations
-
-Suggested commit: `feat: add admin points management`
+Suggested commit: `feat: add admin points management with e2e tests`
 
 ## Task 13: Implement the user balance and history screens
 
@@ -333,20 +335,20 @@ Do:
 - add a history screen backed by persisted records
 - derive the current balance from approved logs and exchanges
 - remove any remaining localStorage-based state from the new app
+- add e2e tests verifying balance and history persistence
 
 Done when:
 - User can see the current balance and transaction history
 - data remains correct after refresh and across sessions
+- e2e tests pass
 
 Verify:
 ```bash
-pnpm --filter web build
+pnpm --filter @bonus-tracker/web test:e2e
+pnpm --filter @bonus-tracker/web test:unit
 ```
 
-Manual check:
-- sign in as User and confirm balance plus history match the database state
-
-Suggested commit: `feat: add user balance and history views`
+Suggested commit: `feat: add user balance and history views with e2e tests`
 
 ## Task 14: Implement the direct exchange flow
 
@@ -358,22 +360,21 @@ Do:
 - persist exchanges in `Exchange` with `costSnapshot`
 - allow optional exchange comment editing after completion
 - update the derived balance through server-side mutations
+- add e2e tests covering exchange operations and balance updates
 
 Done when:
 - User can create an exchange directly
 - exchange history includes optional comments
 - reward history stays correct even after reward definition edits
+- e2e tests pass
 
 Verify:
 ```bash
-pnpm --filter web build
+pnpm --filter @bonus-tracker/web test:e2e
+pnpm --filter @bonus-tracker/web test:unit
 ```
 
-Manual check:
-- perform an exchange as User and confirm the balance and history update correctly
-- add or edit an exchange comment and confirm it persists
-
-Suggested commit: `feat: add direct exchange flow`
+Suggested commit: `feat: add direct exchange flow with e2e tests`
 
 ## Task 15: Add PWA support
 

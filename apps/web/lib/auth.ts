@@ -13,6 +13,10 @@ export type AuthUser = {
   role: Role;
 };
 
+export function getRoleHomePath(role: Role) {
+  return role === "ADMIN" ? "/admin" : "/user";
+}
+
 export async function findUserByPin(pin: string): Promise<AuthUser | null> {
   const users = await db.user.findMany({
     select: {

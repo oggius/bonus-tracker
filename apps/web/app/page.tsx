@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Button } from "@bonus-tracker/ui";
+import { redirect } from "next/navigation";
 
-import { loginWithPinAction, logoutAction } from "./actions/auth";
-import { getCurrentUser } from "../lib/auth";
+import { loginWithPinAction } from "./actions/auth";
+import { getCurrentUser, getRoleHomePath } from "../lib/auth";
 
 type HomePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -13,23 +14,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const hasInvalidPinError = params.error === "invalid_pin";
 
   if (currentUser) {
-    return (
-      <main className="container py-12">
-        <Card className="mx-auto max-w-xl p-8 shadow-sm">
-          <CardHeader className="px-0 pt-0">
-            <CardTitle className="text-3xl">Вітаємо, {currentUser.name}</CardTitle>
-            <CardDescription className="mt-3 leading-relaxed">
-              Сесію успішно створено. Поточна роль: <strong>{currentUser.role}</strong>.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <form action={logoutAction}>
-              <Button type="submit" variant="outline">Вийти</Button>
-            </form>
-          </CardContent>
-        </Card>
-      </main>
-    );
+    redirect(getRoleHomePath(currentUser.role));
   }
 
   return (
@@ -55,12 +40,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                 placeholder="••••"
                 autoComplete="off"
                 required
+                data-testid="pin-input"
               />
             </div>
             {hasInvalidPinError ? (
               <p className="text-sm text-destructive">Невірний PIN. Спробуйте ще раз.</p>
             ) : null}
-            <Button type="submit" className="w-full">Увійти</Button>
+            <Button type="submit" className="w-full" data-testid="login-button">Увійти</Button>
           </form>
         </CardContent>
       </Card>
