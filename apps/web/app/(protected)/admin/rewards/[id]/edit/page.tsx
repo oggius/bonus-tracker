@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { PencilLine } from "lucide-react";
 
 import { Button, Card } from "@bonus-tracker/ui";
 import { getCurrentUser } from "../../../../../../lib/auth";
@@ -33,12 +34,18 @@ export default async function EditRewardPage({
   }
 
   return (
-    <section className="max-w-2xl space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Редагувати нагороду</h2>
-      </div>
+    <section className="mx-auto w-full max-w-2xl space-y-6">
+      <Card className="rounded-[30px] border border-gray-200 bg-white px-6 py-8 shadow-lg">
+        <div className="text-center">
+          <div className="mb-4 inline-flex items-center justify-center rounded-2xl bg-blue-50 p-3">
+            <PencilLine className="h-8 w-8 text-blue-600" />
+          </div>
+          <h2 className="text-4xl font-semibold text-gray-900">Редагувати нагороду</h2>
+          <p className="mt-2 text-lg text-gray-600">Оновіть назву, вартість або опис нагороди.</p>
+        </div>
+      </Card>
 
-      <Card className="p-6">
+      <Card className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
         <RewardForm
           action={updateRewardAction}
           initialData={{

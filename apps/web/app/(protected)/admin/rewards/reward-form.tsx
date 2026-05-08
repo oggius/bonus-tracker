@@ -91,7 +91,13 @@ export function RewardForm({
       ) : null}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={isLoading} data-testid="reward-submit-button">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          data-testid="reward-submit-button"
+          className="text-white"
+          style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
+        >
           {isLoading ? "Обробка..." : submitLabel}
         </Button>
       </div>

@@ -102,7 +102,13 @@ export function PointsForm({ users }: PointsFormProps) {
 
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
 
-      <Button type="submit" disabled={isLoading} data-testid="points-submit-button">
+      <Button
+        type="submit"
+        disabled={isLoading}
+        data-testid="points-submit-button"
+        className="text-white"
+        style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
+      >
         {isLoading ? "Збереження..." : "Зберегти операцію"}
       </Button>
     </form>
