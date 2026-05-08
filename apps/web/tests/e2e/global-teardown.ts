@@ -1,14 +1,14 @@
 import { execSync } from "node:child_process";
 import path from "node:path";
 
-async function globalSetup() {
+async function globalTeardown() {
   const repoRoot = path.resolve(__dirname, "../../../..");
 
-  // Start tests from a clean baseline regardless of prior local mutations.
+  // Always restore local DB to seed baseline after test run (pass/fail).
   execSync("pnpm --filter @bonus-tracker/db exec prisma migrate reset --force --skip-generate", {
     cwd: repoRoot,
     stdio: "inherit",
   });
 }
 
-export default globalSetup;
+export default globalTeardown;
