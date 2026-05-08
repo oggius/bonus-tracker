@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@bonus-tracker/db": "workspace:*",
     "@bonus-tracker/ui": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "jose": "^6.0.11",
     "lucide-react": "^0.487.0",
     "next": "15.5.6",
     "react": "19.1.1",
@@ -18,6 +21,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.12",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.15.17",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",

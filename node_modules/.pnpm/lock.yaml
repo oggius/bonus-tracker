@@ -14,9 +14,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@bonus-tracker/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@bonus-tracker/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
+      jose:
+        specifier: ^6.0.11
+        version: 6.2.3
       lucide-react:
         specifier: ^0.487.0
         version: 0.487.0(react@19.1.1)
@@ -33,6 +42,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.12
         version: 4.2.4
+      '@types/bcryptjs':
+        specifier: ^2.4.6
+        version: 2.4.6
       '@types/node':
         specifier: ^22.15.17
         version: 22.19.17
@@ -1134,6 +1146,9 @@ packages:
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
+
+  jose@6.2.3:
+    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -2242,6 +2257,8 @@ snapshots:
   graceful-fs@4.2.11: {}
 
   jiti@2.6.1: {}
+
+  jose@6.2.3: {}
 
   lightningcss-android-arm64@1.32.0:
     optional: true
