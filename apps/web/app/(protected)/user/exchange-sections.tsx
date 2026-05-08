@@ -7,7 +7,6 @@ import {
   History,
   IceCream,
   LogOut,
-  Plus,
   ShoppingBag,
   Star,
   Ticket,
@@ -45,7 +44,7 @@ type HistoryItem = {
   type: "POINTS" | "EXCHANGE";
 };
 
-type UserScreen = "balance" | "add" | "shop" | "history";
+type UserScreen = "balance" | "shop" | "history";
 
 type ExchangeSectionsProps = {
   balance: number;
@@ -207,19 +206,22 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
                 <p className="text-xl text-gray-500">очок зароблено</p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setScreen("add")}
-                className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-lg font-semibold text-white shadow-md transition hover:brightness-105"
-                style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
-              >
-                <Plus className="h-6 w-6" />
-                Додати очки
-              </button>
+              {balance > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setScreen("shop")}
+                  className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-lg font-semibold text-white shadow-md transition hover:brightness-105"
+                  style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
+                >
+                  <ShoppingBag className="h-6 w-6" />
+                  Обміняти очки
+                </button>
+              ) : null}
             </Card>
           </section>
         ) : null}
 
+        {/*
         {screen === "add" ? (
           <section className="mx-auto w-full max-w-xl">
             <Card className="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm">
@@ -268,6 +270,7 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
             </Card>
           </section>
         ) : null}
+        */}
 
         {screen === "shop" ? (
           <section className="mx-auto w-full max-w-xl space-y-4">
@@ -440,7 +443,7 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
           bottom: 0,
         }}
       >
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 px-3 py-2">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-2 px-3 py-2">
           <button
             type="button"
             onClick={() => setScreen("balance")}
@@ -451,17 +454,6 @@ export function ExchangeSections({ balance, history, rewards, exchanges }: Excha
           >
             <Star className="h-5 w-5" />
             Баланс
-          </button>
-          <button
-            type="button"
-            onClick={() => setScreen("add")}
-            data-testid="user-nav-add"
-            className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
-              screen === "add" ? "bg-gray-100 text-gray-900" : "text-gray-500"
-            }`}
-          >
-            <Plus className="h-5 w-5" />
-            Додати
           </button>
           <button
             type="button"
