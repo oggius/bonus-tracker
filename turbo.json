@@ -1,5 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "DATABASE_URL",
+    "SESSION_SECRET",
+    "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

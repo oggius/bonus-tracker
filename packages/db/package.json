@@ -6,14 +6,15 @@
     ".": "./src/index.ts"
   },
   "prisma": {
+    "schema": "prisma/schema.prisma",
     "seed": "node_modules/.bin/tsx prisma/seed.ts"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "pnpm run db:generate && tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "lint": "echo 'db lint'",
     "prisma": "prisma",
-    "db:generate": "prisma generate",
+    "db:generate": "prisma generate --schema prisma/schema.prisma",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed"
