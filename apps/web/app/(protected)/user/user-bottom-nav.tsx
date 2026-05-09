@@ -1,6 +1,6 @@
 "use client";
 
-import { History, LogOut, ShoppingBag, Star } from "lucide-react";
+import { History, LogOut, PlusCircle, ShoppingBag, Star } from "lucide-react";
 import { logoutAction } from "../../actions/auth";
 import { type UserScreen } from "./exchange-utils";
 
@@ -22,7 +22,7 @@ export function UserBottomNav({ activeScreen, onScreenChange }: UserBottomNavPro
         bottom: 0,
       }}
     >
-      <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-2 px-3 py-2">
+      <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 px-3 py-2">
         <button
           type="button"
           onClick={() => onScreenChange("balance")}
@@ -46,6 +46,19 @@ export function UserBottomNav({ activeScreen, onScreenChange }: UserBottomNavPro
         >
           <ShoppingBag className="h-5 w-5" />
           Магазин
+        </button>
+        <button
+          type="button"
+          onClick={() => onScreenChange("add")}
+          data-testid="user-nav-add"
+          className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
+            activeScreen === "add"
+              ? "bg-gray-100 text-gray-900"
+              : "text-gray-500"
+          }`}
+        >
+          <PlusCircle className="h-5 w-5" />
+          Запит
         </button>
         <button
           type="button"

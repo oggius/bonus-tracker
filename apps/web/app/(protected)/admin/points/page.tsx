@@ -5,19 +5,48 @@ import { Button, Card } from "@bonus-tracker/ui";
 
 import { requireAdminUser } from "../../../../lib/auth";
 import {
+  getPendingPointsRequestsForAdmin,
   getPointsHistoryForAdmin,
   getUserBalanceForAdmin,
   getUsersForPointsAdmin,
 } from "../../../actions/points";
+import { PendingRequestsBlock } from "./pending-requests-block";
 import { PointsForm } from "./points-form";
+
+type AdminPendingRequest = {
+  id: string;
+  delta: number;
+  description: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string;
+  };
+};
+
+type AdminHistoryEntry = {
+  id: string;
+  delta: number;
+  description: string;
+  status: "APPROVED" | "REJECTED";
+  initiatedBy: "USER" | "ADMIN";
+  user: {
+    id: string;
+    name: string;
+  };
+};
 
 export default async function AdminPointsPage() {
   await requireAdminUser();
 
-  const [users, history] = await Promise.all([
+  const [users, historyRaw, pendingRequestsRaw] = await Promise.all([
     getUsersForPointsAdmin(),
     getPointsHistoryForAdmin(),
+    getPendingPointsRequestsForAdmin(),
   ]);
+
+  const history = historyRaw as unknown as AdminHistoryEntry[];
+  const pendingRequests = pendingRequestsRaw as unknown as AdminPendingRequest[];
 
   const usersWithBalance = await Promise.all(
     users.map(async (user) => ({
@@ -25,6 +54,14 @@ export default async function AdminPointsPage() {
       balance: await getUserBalanceForAdmin(user.id),
     }))
   );
+
+  const pendingRequestItems = pendingRequests.map((request) => ({
+    id: request.id,
+    delta: request.delta,
+    description: request.description,
+    createdAt: request.createdAt.toISOString(),
+    user: request.user,
+  }));
 
   return (
     <section className="space-y-6">
@@ -61,6 +98,8 @@ export default async function AdminPointsPage() {
         )}
       </Card>
 
+      <PendingRequestsBlock requests={pendingRequestItems} />
+
       <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <h3 className="mb-3 text-2xl font-semibold text-gray-900">Додати операцію</h3>
         {users.length ? (
@@ -92,6 +131,20 @@ export default async function AdminPointsPage() {
                   </p>
                 </div>
                 <p className="text-sm text-gray-500">{entry.description}</p>
+                <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                  <span
+                    className={`rounded-full px-2 py-1 font-medium ${
+                      entry.status === "APPROVED"
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-rose-100 text-rose-800"
+                    }`}
+                  >
+                    {entry.status === "APPROVED" ? "Підтверджено" : "Відхилено"}
+                  </span>
+                  <span className="rounded-full bg-slate-100 px-2 py-1 text-slate-700">
+                    {entry.initiatedBy === "USER" ? "Ініціатор: користувач" : "Ініціатор: адміністратор"}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

@@ -15,6 +15,17 @@ enum Role {
   USER
 }
 
+enum PointsLogStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PointsLogInitiatedBy {
+  USER
+  ADMIN
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -34,6 +45,8 @@ model PointsLog {
   user        User     @relation(fields: [userId], references: [id])
   delta       Int      // positive = earned, negative = deducted
   description String
+  status      PointsLogStatus      @default(APPROVED)
+  initiatedBy PointsLogInitiatedBy @default(ADMIN)
   createdAt   DateTime @default(now())
   createdById String?  // admin who made the entry
 }

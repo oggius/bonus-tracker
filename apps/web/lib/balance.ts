@@ -5,7 +5,10 @@ import { db } from "./db";
 export async function getUserBalance(userId: string) {
   const [pointsAgg, exchangesAgg] = await Promise.all([
     db.pointsLog.aggregate({
-      where: { userId },
+      where: {
+        userId,
+        status: "APPROVED",
+      },
       _sum: { delta: true },
     }),
     db.exchange.aggregate({
@@ -31,7 +34,10 @@ type UserHistoryItem = {
 export async function getUserHistory(userId: string): Promise<UserHistoryItem[]> {
   const [pointsLogs, exchanges] = await Promise.all([
     db.pointsLog.findMany({
-      where: { userId },
+      where: {
+        userId,
+        status: "APPROVED",
+      },
       select: {
         id: true,
         createdAt: true,

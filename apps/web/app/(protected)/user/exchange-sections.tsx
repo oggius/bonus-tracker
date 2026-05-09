@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { createPointsRequestAction } from "../../actions/points";
 import { createExchangeAction } from "../../actions/exchanges";
+import { AddPointsScreen } from "./add-points-screen";
 import { BalanceScreen } from "./balance-screen";
 import { HistoryScreen } from "./history-screen";
 import { ShopScreen } from "./shop-screen";
@@ -11,6 +13,7 @@ import { UserBottomNav } from "./user-bottom-nav";
 import {
   type ExchangeItem,
   type HistoryItem,
+  type PendingPointsRequestItem,
   type RewardItem,
   type UserScreen,
 } from "./exchange-utils";
@@ -23,6 +26,7 @@ type ExchangeSectionsProps = {
   history: HistoryItem[];
   rewards: RewardItem[];
   exchanges: ExchangeItem[];
+  pendingRequests: PendingPointsRequestItem[];
 };
 
 export function ExchangeSections({
@@ -30,12 +34,14 @@ export function ExchangeSections({
   history,
   rewards,
   exchanges,
+  pendingRequests,
 }: ExchangeSectionsProps) {
   const router = useRouter();
   const [screen, setScreen] = useState<UserScreen>("balance");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmingRewardId, setConfirmingRewardId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const pendingPointsTotal = pendingRequests.reduce((sum, request) => sum + request.amount, 0);
 
   // Promote pending password (stored in sessionStorage at login) to localStorage
   // only when the user lands on the USER page, never for admin.
@@ -64,6 +70,23 @@ export function ExchangeSections({
     }
   };
 
+  const handleCreatePointsRequest = async (amount: number, description: string) => {
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("amount", String(amount));
+      formData.append("description", description);
+      await createPointsRequestAction(formData);
+      router.refresh();
+      setIsSubmitting(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Сталася помилка");
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div
       className="relative flex min-h-[calc(100vh-1px)] flex-col pb-24"
@@ -73,14 +96,18 @@ export function ExchangeSections({
         {screen === "balance" && (
           <BalanceScreen
             balance={balance}
-            onNavigateToShop={() => setScreen("shop")}
+            pendingPointsTotal={pendingPointsTotal}
+            onNavigateToAdd={() => setScreen("add")}
           />
         )}
 
-        {/*
-        Додати очки screen commented out for now.
-        Will be re-enabled when admin adds points feature.
-        */}
+        {screen === "add" && (
+          <AddPointsScreen
+            pendingRequests={pendingRequests}
+            isSubmitting={isSubmitting}
+            onSubmitRequest={handleCreatePointsRequest}
+          />
+        )}
 
         {screen === "shop" && (
           <ShopScreen

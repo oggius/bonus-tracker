@@ -1,14 +1,15 @@
 "use client";
 
-import { ShoppingBag, Star } from "lucide-react";
+import { PlusCircle, Star } from "lucide-react";
 import { Card } from "@bonus-tracker/ui";
 
 type BalanceScreenProps = {
   balance: number;
-  onNavigateToShop: () => void;
+  pendingPointsTotal: number;
+  onNavigateToAdd: () => void;
 };
 
-export function BalanceScreen({ balance, onNavigateToShop }: BalanceScreenProps) {
+export function BalanceScreen({ balance, pendingPointsTotal, onNavigateToAdd }: BalanceScreenProps) {
   return (
     <section className="flex min-h-[calc(100vh-180px)] items-center justify-center">
       <Card className="w-full max-w-xl rounded-[30px] border border-gray-200 bg-white px-6 py-8 shadow-lg">
@@ -22,17 +23,22 @@ export function BalanceScreen({ balance, onNavigateToShop }: BalanceScreenProps)
             <p className="text-7xl font-normal text-gray-900">{balance}</p>
           </div>
           <p className="text-xl text-gray-500">очок зароблено</p>
+          {pendingPointsTotal > 0 ? (
+            <p className="mt-1 text-sm text-gray-500" data-testid="user-pending-points-summary">
+              (+{pendingPointsTotal} очок на підтвердженні)
+            </p>
+          ) : null}
         </div>
 
         {balance > 0 ? (
           <button
             type="button"
-            onClick={onNavigateToShop}
+            onClick={onNavigateToAdd}
             className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl px-4 py-4 text-lg font-semibold text-white shadow-md transition hover:brightness-105"
             style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
           >
-            <ShoppingBag className="h-6 w-6" />
-            Обміняти очки
+            <PlusCircle className="h-6 w-6" />
+            Додати очки
           </button>
         ) : null}
       </Card>

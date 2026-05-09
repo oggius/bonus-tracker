@@ -22,7 +22,14 @@ export type HistoryItem = {
   type: "POINTS" | "EXCHANGE";
 };
 
-export type UserScreen = "balance" | "shop" | "history";
+export type PendingPointsRequestItem = {
+  id: string;
+  amount: number;
+  description: string;
+  createdAt: string;
+};
+
+export type UserScreen = "balance" | "add" | "shop" | "history";
 
 export const SHOP_CARD_STYLES = [
   {

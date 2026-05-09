@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "../../../lib/auth";
 import { db } from "../../../lib/db";
+import { getPendingPointsRequestsForUser } from "../../actions/points";
 import { getUserBalance, getUserHistory } from "../../../lib/balance";
 import { ExchangeSections } from "./exchange-sections";
 
@@ -16,7 +17,7 @@ export default async function UserPage() {
     redirect("/admin");
   }
 
-  const [balance, history, rewards, exchanges] = await Promise.all([
+  const [balance, history, rewards, exchanges, pendingRequests] = await Promise.all([
     getUserBalance(currentUser.id),
     getUserHistory(currentUser.id),
     db.rewardDefinition.findMany({
@@ -43,6 +44,7 @@ export default async function UserPage() {
       },
       orderBy: { createdAt: "desc" },
     }),
+    getPendingPointsRequestsForUser(),
   ]);
 
   const exchangeItems = exchanges.map((exchange) => ({
@@ -60,7 +62,20 @@ export default async function UserPage() {
     type: entry.type,
   }));
 
+  const pendingRequestItems = pendingRequests.map((request) => ({
+    id: request.id,
+    amount: request.delta,
+    description: request.description,
+    createdAt: request.createdAt.toISOString(),
+  }));
+
   return (
-    <ExchangeSections balance={balance} history={historyItems} rewards={rewards} exchanges={exchangeItems} />
+    <ExchangeSections
+      balance={balance}
+      history={historyItems}
+      rewards={rewards}
+      exchanges={exchangeItems}
+      pendingRequests={pendingRequestItems}
+    />
   );
 }

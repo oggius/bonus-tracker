@@ -1,13 +1,23 @@
 "use server";
 
 import { db } from "../../lib/db";
-import { requireAdminUser } from "../../lib/auth";
+import { getCurrentUser, requireAdminUser } from "../../lib/auth";
 import { getUserBalance } from "../../lib/balance";
 
 const POINT_ACTION_TYPES = new Set(["award", "deduct"]);
 
 async function assertAdmin() {
   return requireAdminUser();
+}
+
+async function assertUser() {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser || currentUser.role !== "USER") {
+    throw new Error("Недостатньо прав доступу");
+  }
+
+  return currentUser;
 }
 
 export async function createPointsLogAction(formData: FormData) {
@@ -58,8 +68,125 @@ export async function createPointsLogAction(formData: FormData) {
       userId,
       delta,
       description,
+      status: "APPROVED",
+      initiatedBy: "ADMIN",
       createdById: currentUser.id,
     },
+  });
+}
+
+export async function createPointsRequestAction(formData: FormData) {
+  const currentUser = await assertUser();
+
+  const amountRaw = String(formData.get("amount") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+
+  const amount = Number.parseInt(amountRaw, 10);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Кількість очок має бути додатним цілим числом");
+  }
+
+  if (!description) {
+    throw new Error("Опишіть активність, за яку ви просите очки");
+  }
+
+  await db.pointsLog.create({
+    data: {
+      userId: currentUser.id,
+      delta: amount,
+      description,
+      status: "PENDING",
+      initiatedBy: "USER",
+    },
+  });
+}
+
+export async function approvePointsRequestAction(requestId: string) {
+  const currentUser = await assertAdmin();
+
+  const request = await db.pointsLog.findUnique({
+    where: { id: requestId },
+    select: {
+      id: true,
+      status: true,
+      initiatedBy: true,
+    },
+  });
+
+  if (!request || request.status !== "PENDING" || request.initiatedBy !== "USER") {
+    throw new Error("Запит не знайдено або вже оброблено");
+  }
+
+  await db.pointsLog.update({
+    where: { id: request.id },
+    data: {
+      status: "APPROVED",
+      createdById: currentUser.id,
+    },
+  });
+}
+
+export async function rejectPointsRequestAction(requestId: string) {
+  const currentUser = await assertAdmin();
+
+  const request = await db.pointsLog.findUnique({
+    where: { id: requestId },
+    select: {
+      id: true,
+      status: true,
+      initiatedBy: true,
+    },
+  });
+
+  if (!request || request.status !== "PENDING" || request.initiatedBy !== "USER") {
+    throw new Error("Запит не знайдено або вже оброблено");
+  }
+
+  await db.pointsLog.update({
+    where: { id: request.id },
+    data: {
+      status: "REJECTED",
+      createdById: currentUser.id,
+    },
+  });
+}
+
+export async function getPendingPointsRequestsForUser() {
+  const currentUser = await assertUser();
+
+  return db.pointsLog.findMany({
+    where: {
+      userId: currentUser.id,
+      status: "PENDING",
+      initiatedBy: "USER",
+    } as any,
+    select: {
+      id: true,
+      delta: true,
+      description: true,
+      createdAt: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getPendingPointsRequestsForAdmin() {
+  await assertAdmin();
+
+  return db.pointsLog.findMany({
+    where: {
+      status: "PENDING",
+      initiatedBy: "USER",
+    } as any,
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "asc" },
   });
 }
 
@@ -80,6 +207,9 @@ export async function getPointsHistoryForAdmin() {
   await assertAdmin();
 
   return db.pointsLog.findMany({
+    where: {
+      NOT: { status: "PENDING" },
+    } as any,
     orderBy: { createdAt: "desc" },
     take: 50,
     include: {
