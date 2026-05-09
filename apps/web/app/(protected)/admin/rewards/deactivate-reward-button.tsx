@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@bonus-tracker/ui";
 import { deactivateRewardAction } from "../../../actions/rewards";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 
 export function DeactivateRewardButton({ rewardId }: { rewardId: string }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,14 +38,23 @@ export function DeactivateRewardButton({ rewardId }: { rewardId: string }) {
   }
 
   return (
-    <Button
-      variant="destructive"
-      size="sm"
-      onClick={handleDeactivate}
-      disabled={isLoading}
-      data-testid={`deactivate-reward-button-${rewardId}`}
-    >
-      {isLoading ? "Деактивація..." : "Деактивувати"}
-    </Button>
+    <div className={`loading-section inline-flex ${isLoading ? "loading-section--busy" : ""}`}>
+      <Button
+        variant="destructive"
+        size="sm"
+        onClick={handleDeactivate}
+        disabled={isLoading}
+        data-testid={`deactivate-reward-button-${rewardId}`}
+      >
+        {isLoading ? (
+          <>
+            <LoadingSpinner />
+            Деактивація...
+          </>
+        ) : (
+          "Деактивувати"
+        )}
+      </Button>
+    </div>
   );
 }

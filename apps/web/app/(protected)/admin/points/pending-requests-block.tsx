@@ -8,6 +8,7 @@ import {
   approvePointsRequestAction,
   rejectPointsRequestAction,
 } from "../../../actions/points";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 
 type PendingRequest = {
   id: string;
@@ -75,7 +76,9 @@ export function PendingRequestsBlock({ requests }: PendingRequestsBlockProps) {
           return (
             <div
               key={request.id}
-              className="rounded-xl border border-amber-200 bg-white p-3"
+              className={`loading-section rounded-xl border border-amber-200 bg-white p-3 ${
+                isLoading ? "loading-section--busy" : ""
+              }`}
               data-testid={`admin-pending-request-${request.id}`}
             >
               <div className="mb-2 flex items-center justify-between gap-3">
@@ -102,7 +105,14 @@ export function PendingRequestsBlock({ requests }: PendingRequestsBlockProps) {
                   className="text-white"
                   style={{ backgroundImage: "linear-gradient(90deg, #16a34a 0%, #22c55e 100%)" }}
                 >
-                  {isLoading ? "Обробка..." : "Підтвердити"}
+                  {isLoading ? (
+                    <>
+                      <LoadingSpinner />
+                      Обробка...
+                    </>
+                  ) : (
+                    "Підтвердити"
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -111,7 +121,14 @@ export function PendingRequestsBlock({ requests }: PendingRequestsBlockProps) {
                   onClick={() => handleReject(request.id)}
                   data-testid={`admin-reject-request-${request.id}`}
                 >
-                  {isLoading ? "Обробка..." : "Відхилити"}
+                  {isLoading ? (
+                    <>
+                      <LoadingSpinner />
+                      Обробка...
+                    </>
+                  ) : (
+                    "Відхилити"
+                  )}
                 </Button>
               </div>
             </div>

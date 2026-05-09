@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, Input, Label } from "@bonus-tracker/ui";
 
 import { createPointsLogAction } from "../../../actions/points";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 
 type UserOption = {
   id: string;
@@ -36,7 +37,10 @@ export function PointsForm({ users }: PointsFormProps) {
   };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
+    <form
+      action={handleSubmit}
+      className={`loading-section space-y-4 ${isLoading ? "loading-section--busy" : ""}`}
+    >
       <div className="space-y-2">
         <Label htmlFor="userId">Користувач</Label>
         <select
@@ -109,7 +113,14 @@ export function PointsForm({ users }: PointsFormProps) {
         className="text-white"
         style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
       >
-        {isLoading ? "Збереження..." : "Зберегти операцію"}
+        {isLoading ? (
+          <>
+            <LoadingSpinner />
+            Збереження...
+          </>
+        ) : (
+          "Зберегти операцію"
+        )}
       </Button>
     </form>
   );

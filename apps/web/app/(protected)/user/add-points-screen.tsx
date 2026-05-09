@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react";
 import { Clock3, PlusCircle } from "lucide-react";
 
 import { Button, Card, Input, Label } from "@bonus-tracker/ui";
+import { LoadingSpinner } from "../../components/loading-spinner";
 import { formatHistoryDate, type PendingPointsRequestItem } from "./exchange-utils";
 
 type AddPointsScreenProps = {
@@ -40,7 +41,11 @@ export function AddPointsScreen({
 
   return (
     <section className="mx-auto w-full max-w-xl space-y-4">
-      <Card className="rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm">
+      <Card
+        className={`loading-section rounded-[30px] border border-gray-200 bg-white p-6 shadow-sm ${
+          isSubmitting ? "loading-section--busy" : ""
+        }`}
+      >
         <h2 className="mb-6 text-4xl font-semibold text-gray-900">Запросити очки</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -87,7 +92,7 @@ export function AddPointsScreen({
             className="h-14 w-full rounded-2xl text-lg text-white"
             style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
           >
-            <PlusCircle className="h-5 w-5" />
+            {isSubmitting ? <LoadingSpinner /> : <PlusCircle className="h-5 w-5" />}
             {isSubmitting ? "Надсилання..." : "Надіслати на підтвердження"}
           </Button>
         </form>

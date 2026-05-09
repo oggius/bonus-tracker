@@ -8,6 +8,7 @@ import {
   changeAdminPasswordAction,
   setUserPasswordAction,
 } from "../../../actions/password";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 
 type AdminPasswordFormProps = {
   mustChangePassword: boolean;
@@ -34,7 +35,10 @@ export function AdminPasswordForm({ mustChangePassword }: AdminPasswordFormProps
   };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
+    <form
+      action={handleSubmit}
+      className={`loading-section space-y-4 ${isLoading ? "loading-section--busy" : ""}`}
+    >
       {mustChangePassword ? (
         <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
           Для безпеки потрібно змінити стандартний пароль адміністратора.
@@ -86,7 +90,14 @@ export function AdminPasswordForm({ mustChangePassword }: AdminPasswordFormProps
         data-testid="admin-password-submit-button"
         style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
       >
-        {isLoading ? "Збереження..." : "Оновити пароль адміністратора"}
+        {isLoading ? (
+          <>
+            <LoadingSpinner />
+            Збереження...
+          </>
+        ) : (
+          "Оновити пароль адміністратора"
+        )}
       </Button>
     </form>
   );
@@ -117,7 +128,10 @@ export function UserPasswordForm({ userId, userName }: UserPasswordFormProps) {
   };
 
   return (
-    <form action={handleSubmit} className="space-y-4">
+    <form
+      action={handleSubmit}
+      className={`loading-section space-y-4 ${isLoading ? "loading-section--busy" : ""}`}
+    >
       <input type="hidden" name="userId" value={userId} />
 
       <p className="text-sm text-gray-600">
@@ -156,7 +170,14 @@ export function UserPasswordForm({ userId, userName }: UserPasswordFormProps) {
         variant="outline"
         data-testid="user-password-submit-button"
       >
-        {isLoading ? "Збереження..." : "Оновити пароль користувача"}
+        {isLoading ? (
+          <>
+            <LoadingSpinner />
+            Збереження...
+          </>
+        ) : (
+          "Оновити пароль користувача"
+        )}
       </Button>
     </form>
   );

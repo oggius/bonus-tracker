@@ -18,6 +18,57 @@ body {
   font-family: var(--app-font-family);
 }
 
+.loading-section {
+  position: relative;
+  transition: opacity 160ms ease;
+}
+
+.loading-section--busy {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.app-splash {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(251, 191, 36, 0.22), transparent 40%),
+    radial-gradient(circle at 90% 30%, rgba(251, 146, 60, 0.24), transparent 45%),
+    linear-gradient(145deg, #fff7ed 0%, #fffbeb 100%);
+}
+
+.app-splash__panel {
+  width: min(360px, 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(251, 146, 60, 0.22);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 24px 50px rgba(120, 53, 15, 0.12);
+  backdrop-filter: blur(6px);
+  padding: 1.5rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.app-splash__logo {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #92400e;
+}
+
+.app-splash__loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: #b45309;
+  font-weight: 500;
+}
+
 .container {
   width: min(960px, 100% - 2rem);
   margin: 0 auto;

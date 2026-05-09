@@ -2,6 +2,29 @@ import { test, expect } from "@playwright/test";
 import { loginAsAdmin, loginAsUser } from "./helpers/auth";
 
 test.describe("Password auth and role routing", () => {
+  test("auth submit disables controls while waiting for response", async ({ page }) => {
+    await page.route("**/*", async (route) => {
+      if (route.request().method() === "POST") {
+        await new Promise((resolve) => setTimeout(resolve, 700));
+      }
+
+      await route.continue();
+    });
+
+    await page.goto("/");
+    await page.getByTestId("password-input").fill("9999");
+    await page.getByTestId("login-button").click();
+
+    await expect(page.getByTestId("password-input")).toBeDisabled();
+    await expect(page.getByTestId("login-button")).toBeDisabled();
+    await expect(page.getByTestId("login-button")).toContainText("Вхід...");
+    await expect(page.locator('input[type="checkbox"]').first()).toBeDisabled();
+
+    await expect(page).toHaveURL("/?error=invalid_credentials");
+    await expect(page.getByTestId("password-input")).toBeEnabled();
+    await expect(page.getByTestId("login-button")).toBeEnabled();
+  });
+
   test("anonymous users are redirected to login when opening protected routes", async ({ page }) => {
     await page.goto("/admin");
     await expect(page).toHaveURL("/");

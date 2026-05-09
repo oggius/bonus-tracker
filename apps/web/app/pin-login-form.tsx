@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button, Input, Label } from "@bonus-tracker/ui";
 
 import { loginAction } from "./actions/auth";
+import { LoadingSpinner } from "./components/loading-spinner";
 
 const SAVED_PASSWORD_STORAGE_KEY = "bonus_tracker_saved_password";
 const PENDING_PASSWORD_SESSION_KEY = "bonus_tracker_pending_password";
@@ -16,6 +17,7 @@ type PasswordLoginFormProps = {
 export function PasswordLoginForm({ hasInvalidCredentialsError }: PasswordLoginFormProps) {
   const [password, setPassword] = useState("");
   const [rememberOnDevice, setRememberOnDevice] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
@@ -36,8 +38,10 @@ export function PasswordLoginForm({ hasInvalidCredentialsError }: PasswordLoginF
     <form
       ref={formRef}
       action={loginAction}
-      className="space-y-4"
+      className={`loading-section space-y-4 ${isSubmitting ? "loading-section--busy" : ""}`}
       onSubmit={() => {
+        setIsSubmitting(true);
+
         // Store password in sessionStorage as "pending". Only the USER page
         // promotes it to localStorage on mount; the admin page ignores it.
         if (rememberOnDevice && password.trim()) {
@@ -61,6 +65,7 @@ export function PasswordLoginForm({ hasInvalidCredentialsError }: PasswordLoginF
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          disabled={isSubmitting}
           className="h-14 rounded-xl border border-gray-200 bg-gray-50 text-lg"
           data-testid="password-input"
         />
@@ -71,6 +76,7 @@ export function PasswordLoginForm({ hasInvalidCredentialsError }: PasswordLoginF
           type="checkbox"
           checked={rememberOnDevice}
           onChange={(event) => setRememberOnDevice(event.target.checked)}
+          disabled={isSubmitting}
         />
         Запам'ятати пароль на цьому пристрої
       </label>
@@ -83,11 +89,19 @@ export function PasswordLoginForm({ hasInvalidCredentialsError }: PasswordLoginF
 
       <Button
         type="submit"
+        disabled={isSubmitting}
         className="h-14 w-full rounded-2xl text-lg font-semibold text-white"
         style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
         data-testid="login-button"
       >
-        Увійти
+        {isSubmitting ? (
+          <>
+            <LoadingSpinner />
+            Вхід...
+          </>
+        ) : (
+          "Увійти"
+        )}
       </Button>
     </form>
   );

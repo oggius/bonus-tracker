@@ -2,6 +2,7 @@
 
 import { Star } from "lucide-react";
 import { Card } from "@bonus-tracker/ui";
+import { LoadingSpinner } from "../../components/loading-spinner";
 import { RewardTile } from "./reward-tile";
 import { ExchangeConfirmDialog } from "./exchange-confirm-dialog";
 import { type RewardItem } from "./exchange-utils";
@@ -30,7 +31,11 @@ export function ShopScreen({
   onManualRefresh,
 }: ShopScreenProps) {
   return (
-    <section className="mx-auto w-full max-w-xl space-y-4">
+    <section
+      className={`loading-section mx-auto w-full max-w-xl space-y-4 ${
+        isSubmitting ? "loading-section--busy" : ""
+      }`}
+    >
       <h2 className="text-center text-5xl font-semibold text-gray-900">Магазин бонусів</h2>
 
       {/* Available Balance Card */}
@@ -60,8 +65,9 @@ export function ShopScreen({
                 key={reward.id}
                 reward={reward}
                 isEligible={isEligible}
+                isDisabled={isSubmitting}
                 onClick={() => {
-                  if (isEligible) {
+                  if (isEligible && !isSubmitting) {
                     onRewardClick(reward.id);
                   }
                 }}
@@ -78,6 +84,7 @@ export function ShopScreen({
       <ExchangeConfirmDialog
         isOpen={!!confirmingRewardId}
         isLoading={isSubmitting}
+        loadingIndicator={<LoadingSpinner />}
         onConfirm={() => {
           if (confirmingRewardId) {
             onConfirmExchange(confirmingRewardId);

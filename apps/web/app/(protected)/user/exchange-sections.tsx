@@ -21,6 +21,10 @@ const SAVED_PASSWORD_STORAGE_KEY = "bonus_tracker_saved_password";
 const PENDING_PASSWORD_SESSION_KEY = "bonus_tracker_pending_password";
 const USER_STATE_POLL_INTERVAL_MS = 60_000;
 
+type RefreshStateOptions = {
+  showIndicator: boolean;
+};
+
 type ExchangeSectionsProps = {
   balance: number;
   history: HistoryItem[];
@@ -58,17 +62,19 @@ export function ExchangeSections({
     }
 
     pollTimeoutRef.current = setTimeout(() => {
-      void refreshState();
+      void refreshState({ showIndicator: false });
     }, USER_STATE_POLL_INTERVAL_MS);
   };
 
-  const refreshState = async () => {
+  const refreshState = async ({ showIndicator }: RefreshStateOptions) => {
     if (refreshInFlightRef.current) {
       return;
     }
 
     refreshInFlightRef.current = true;
-    setIsRefreshing(true);
+    if (showIndicator) {
+      setIsRefreshing(true);
+    }
 
     try {
       const response = await fetch("/api/user/state", {
@@ -95,9 +101,14 @@ export function ExchangeSections({
       setStatePendingRequests(nextState.pendingRequests);
       setError(null);
     } catch {
-      setError("Не вдалося оновити дані. Спробуйте ще раз.");
+      if (showIndicator) {
+        setError("Не вдалося оновити дані. Спробуйте ще раз.");
+      }
     } finally {
-      setIsRefreshing(false);
+      if (showIndicator) {
+        setIsRefreshing(false);
+      }
+
       refreshInFlightRef.current = false;
       scheduleNextPoll();
     }
@@ -132,7 +143,7 @@ export function ExchangeSections({
       formData.append("rewardId", rewardId);
       await createExchangeAction(formData);
       setConfirmingRewardId(null);
-      await refreshState();
+      await refreshState({ showIndicator: false });
       setIsSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Сталася помилка");
@@ -149,7 +160,7 @@ export function ExchangeSections({
       formData.append("amount", String(amount));
       formData.append("description", description);
       await createPointsRequestAction(formData);
-      await refreshState();
+      await refreshState({ showIndicator: false });
       setIsSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Сталася помилка");
@@ -168,7 +179,7 @@ export function ExchangeSections({
             balance={stateBalance}
             pendingPointsTotal={pendingPointsTotal}
             onNavigateToAdd={() => setScreen("add")}
-            onManualRefresh={refreshState}
+            onManualRefresh={() => refreshState({ showIndicator: true })}
             isRefreshing={isRefreshing}
           />
         )}
@@ -190,7 +201,7 @@ export function ExchangeSections({
             onRewardClick={setConfirmingRewardId}
             onConfirmExchange={handleConfirmExchange}
             onCancelExchange={() => setConfirmingRewardId(null)}
-            onManualRefresh={refreshState}
+            onManualRefresh={() => refreshState({ showIndicator: true })}
             isRefreshing={isRefreshing}
           />
         )}

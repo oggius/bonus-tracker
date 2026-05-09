@@ -1,10 +1,13 @@
 "use client";
 
+import { type ReactNode } from "react";
+
 import { Card } from "@bonus-tracker/ui";
 
 type ExchangeConfirmDialogProps = {
   isOpen: boolean;
   isLoading: boolean;
+  loadingIndicator?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -12,6 +15,7 @@ type ExchangeConfirmDialogProps = {
 export function ExchangeConfirmDialog({
   isOpen,
   isLoading,
+  loadingIndicator,
   onConfirm,
   onCancel,
 }: ExchangeConfirmDialogProps) {
@@ -32,9 +36,16 @@ export function ExchangeConfirmDialog({
               type="button"
               onClick={onConfirm}
               disabled={isLoading}
-              className="flex-1 rounded-2xl bg-green-500 px-4 py-3 text-lg font-semibold text-white transition hover:bg-green-600 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-green-500 px-4 py-3 text-lg font-semibold text-white transition hover:bg-green-600 disabled:opacity-50"
             >
-              {isLoading ? "Обробка..." : "Так!"}
+              {isLoading ? (
+                <>
+                  {loadingIndicator}
+                  Обробка...
+                </>
+              ) : (
+                "Так!"
+              )}
             </button>
             <button
               type="button"

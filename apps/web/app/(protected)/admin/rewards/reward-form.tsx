@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@bonus-tracker/ui";
 import { Input } from "@bonus-tracker/ui";
 import { Label } from "@bonus-tracker/ui";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 
 interface RewardFormProps {
   action: (formData: FormData) => Promise<unknown>;
@@ -41,7 +42,10 @@ export function RewardForm({
   };
 
   return (
-    <form action={handleSubmit} className="space-y-6">
+    <form
+      action={handleSubmit}
+      className={`loading-section space-y-6 ${isLoading ? "loading-section--busy" : ""}`}
+    >
       {initialData?.id ? <input type="hidden" name="id" value={initialData.id} /> : null}
 
       <div className="space-y-2">
@@ -98,7 +102,14 @@ export function RewardForm({
           className="text-white"
           style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
         >
-          {isLoading ? "Обробка..." : submitLabel}
+          {isLoading ? (
+            <>
+              <LoadingSpinner />
+              Обробка...
+            </>
+          ) : (
+            submitLabel
+          )}
         </Button>
       </div>
     </form>
