@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 import { createPointsRequestAction } from "../../actions/points";
 import { createExchangeAction } from "../../actions/exchanges";
@@ -20,6 +19,7 @@ import {
 
 const SAVED_PASSWORD_STORAGE_KEY = "bonus_tracker_saved_password";
 const PENDING_PASSWORD_SESSION_KEY = "bonus_tracker_pending_password";
+const USER_STATE_POLL_INTERVAL_MS = 60_000;
 
 type ExchangeSectionsProps = {
   balance: number;
@@ -36,12 +36,72 @@ export function ExchangeSections({
   exchanges,
   pendingRequests,
 }: ExchangeSectionsProps) {
-  const router = useRouter();
   const [screen, setScreen] = useState<UserScreen>("balance");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [confirmingRewardId, setConfirmingRewardId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const pendingPointsTotal = pendingRequests.reduce((sum, request) => sum + request.amount, 0);
+  const [stateBalance, setStateBalance] = useState(balance);
+  const [stateHistory, setStateHistory] = useState(history);
+  const [stateRewards, setStateRewards] = useState(rewards);
+  const [stateExchanges, setStateExchanges] = useState(exchanges);
+  const [statePendingRequests, setStatePendingRequests] = useState(pendingRequests);
+
+  const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const refreshInFlightRef = useRef(false);
+
+  const pendingPointsTotal = statePendingRequests.reduce((sum, request) => sum + request.amount, 0);
+
+  const scheduleNextPoll = () => {
+    if (pollTimeoutRef.current) {
+      clearTimeout(pollTimeoutRef.current);
+    }
+
+    pollTimeoutRef.current = setTimeout(() => {
+      void refreshState();
+    }, USER_STATE_POLL_INTERVAL_MS);
+  };
+
+  const refreshState = async () => {
+    if (refreshInFlightRef.current) {
+      return;
+    }
+
+    refreshInFlightRef.current = true;
+    setIsRefreshing(true);
+
+    try {
+      const response = await fetch("/api/user/state", {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        throw new Error("Не вдалося оновити дані");
+      }
+
+      const nextState = (await response.json()) as {
+        balance: number;
+        history: HistoryItem[];
+        rewards: RewardItem[];
+        exchanges: ExchangeItem[];
+        pendingRequests: PendingPointsRequestItem[];
+      };
+
+      setStateBalance(nextState.balance);
+      setStateHistory(nextState.history);
+      setStateRewards(nextState.rewards);
+      setStateExchanges(nextState.exchanges);
+      setStatePendingRequests(nextState.pendingRequests);
+      setError(null);
+    } catch {
+      setError("Не вдалося оновити дані. Спробуйте ще раз.");
+    } finally {
+      setIsRefreshing(false);
+      refreshInFlightRef.current = false;
+      scheduleNextPoll();
+    }
+  };
 
   // Promote pending password (stored in sessionStorage at login) to localStorage
   // only when the user lands on the USER page, never for admin.
@@ -53,6 +113,16 @@ export function ExchangeSections({
     sessionStorage.removeItem(PENDING_PASSWORD_SESSION_KEY);
   }, []);
 
+  useEffect(() => {
+    scheduleNextPoll();
+
+    return () => {
+      if (pollTimeoutRef.current) {
+        clearTimeout(pollTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleConfirmExchange = async (rewardId: string) => {
     setIsSubmitting(true);
     setError(null);
@@ -61,8 +131,8 @@ export function ExchangeSections({
       const formData = new FormData();
       formData.append("rewardId", rewardId);
       await createExchangeAction(formData);
-      router.refresh();
       setConfirmingRewardId(null);
+      await refreshState();
       setIsSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Сталася помилка");
@@ -79,7 +149,7 @@ export function ExchangeSections({
       formData.append("amount", String(amount));
       formData.append("description", description);
       await createPointsRequestAction(formData);
-      router.refresh();
+      await refreshState();
       setIsSubmitting(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Сталася помилка");
@@ -95,15 +165,17 @@ export function ExchangeSections({
       <div className="mx-auto w-full max-w-3xl flex-1 px-4 pb-6 pt-6 md:px-6">
         {screen === "balance" && (
           <BalanceScreen
-            balance={balance}
+            balance={stateBalance}
             pendingPointsTotal={pendingPointsTotal}
             onNavigateToAdd={() => setScreen("add")}
+            onManualRefresh={refreshState}
+            isRefreshing={isRefreshing}
           />
         )}
 
         {screen === "add" && (
           <AddPointsScreen
-            pendingRequests={pendingRequests}
+            pendingRequests={statePendingRequests}
             isSubmitting={isSubmitting}
             onSubmitRequest={handleCreatePointsRequest}
           />
@@ -111,17 +183,19 @@ export function ExchangeSections({
 
         {screen === "shop" && (
           <ShopScreen
-            balance={balance}
-            rewards={rewards}
+            balance={stateBalance}
+            rewards={stateRewards}
             confirmingRewardId={confirmingRewardId}
             isSubmitting={isSubmitting}
             onRewardClick={setConfirmingRewardId}
             onConfirmExchange={handleConfirmExchange}
             onCancelExchange={() => setConfirmingRewardId(null)}
+            onManualRefresh={refreshState}
+            isRefreshing={isRefreshing}
           />
         )}
 
-        {screen === "history" && <HistoryScreen history={history} />}
+        {screen === "history" && <HistoryScreen history={stateHistory} />}
 
         {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
       </div>

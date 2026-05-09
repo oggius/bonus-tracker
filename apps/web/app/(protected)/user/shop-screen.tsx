@@ -11,9 +11,11 @@ type ShopScreenProps = {
   rewards: RewardItem[];
   confirmingRewardId: string | null;
   isSubmitting: boolean;
+  isRefreshing: boolean;
   onRewardClick: (rewardId: string) => void;
   onConfirmExchange: (rewardId: string) => void;
   onCancelExchange: () => void;
+  onManualRefresh: () => Promise<void>;
 };
 
 export function ShopScreen({
@@ -21,9 +23,11 @@ export function ShopScreen({
   rewards,
   confirmingRewardId,
   isSubmitting,
+  isRefreshing,
   onRewardClick,
   onConfirmExchange,
   onCancelExchange,
+  onManualRefresh,
 }: ShopScreenProps) {
   return (
     <section className="mx-auto w-full max-w-xl space-y-4">
@@ -33,10 +37,16 @@ export function ShopScreen({
       <Card className="rounded-[30px] border border-gray-200 bg-white px-6 py-8 shadow-lg">
         <div className="text-center">
           <p className="mb-2 text-3xl font-medium text-gray-600">Доступно очок</p>
-          <div className="mb-2 flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => void onManualRefresh()}
+            disabled={isRefreshing}
+            className="mb-2 flex w-full items-center justify-center gap-3 rounded-2xl transition disabled:cursor-not-allowed disabled:opacity-60"
+            data-testid="user-shop-current-balance"
+          >
             <Star className="h-12 w-12 fill-yellow-300 text-yellow-300" />
             <p className="text-7xl font-normal text-gray-900">{balance}</p>
-          </div>
+          </button>
         </div>
       </Card>
 

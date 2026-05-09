@@ -155,4 +155,58 @@ test.describe("User balance and history", () => {
       page.locator('[data-testid^="user-history-item-"]').filter({ hasText: description }).first()
     ).toHaveCount(0);
   });
+
+  test("manual refresh on balance updates user state without page reload", async ({ page, browser }) => {
+    const description = uniqueText("Оновлення вручну");
+
+    await loginAsUser(page);
+    const initialBalance = await readUserBalance(page);
+
+    await page.getByTestId("user-nav-add").click();
+    await page.getByTestId("user-add-points-amount-input").fill("6");
+    await page.getByTestId("user-add-points-description-input").fill(description);
+    await page.getByTestId("user-add-points-submit-button").click();
+
+    const pendingEntry = page
+      .locator('[data-testid^="user-pending-request-"]')
+      .filter({ hasText: description })
+      .first();
+    await expect(pendingEntry).toBeVisible();
+
+    const adminContext = await browser.newContext();
+    const adminPage = await adminContext.newPage();
+
+    try {
+      await loginAsAdmin(adminPage);
+      await adminPage.goto("/admin/points");
+
+      const adminPendingRequest = adminPage
+        .locator('[data-testid^="admin-pending-request-"]')
+        .filter({ hasText: description })
+        .first();
+
+      await expect(adminPendingRequest).toBeVisible();
+      await adminPendingRequest.locator('[data-testid^="admin-approve-request-"]').click();
+      await expect(adminPendingRequest).toHaveCount(0);
+    } finally {
+      await adminContext.close();
+    }
+
+    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-current-balance").click();
+
+    await expect
+      .poll(async () => readUserBalance(page), { timeout: 10_000 })
+      .toBe(initialBalance + 6);
+
+    await page.getByTestId("user-nav-add").click();
+    await expect(
+      page.locator('[data-testid^="user-pending-request-"]').filter({ hasText: description }).first()
+    ).toHaveCount(0);
+
+    await page.getByTestId("user-nav-history").click();
+    await expect(
+      page.locator('[data-testid^="user-history-item-"]').filter({ hasText: description }).first()
+    ).toBeVisible();
+  });
 });
