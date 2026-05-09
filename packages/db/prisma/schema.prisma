@@ -19,7 +19,8 @@ model User {
   id        String   @id @default(cuid())
   name      String
   role      Role
-  pinHash   String
+  passwordHash String
+  mustChangePassword Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

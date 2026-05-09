@@ -1,13 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { loginAsAdmin } from "./helpers/auth";
 
 const uniqueName = (prefix: string) => `${prefix} ${Math.random().toString(36).slice(2, 10)}`;
 
 test.describe("Admin Reward Management", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
-    await page.getByTestId("pin-input").fill("1234");
-    await page.getByTestId("login-button").click();
-    await expect(page).toHaveURL("/admin");
+    await loginAsAdmin(page);
   });
 
   test("should display rewards list page", async ({ page }) => {

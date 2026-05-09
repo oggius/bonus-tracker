@@ -15,8 +15,8 @@ import {
   type UserScreen,
 } from "./exchange-utils";
 
-const SAVED_PIN_STORAGE_KEY = "bonus_tracker_saved_pin";
-const PENDING_PIN_SESSION_KEY = "bonus_tracker_pending_pin";
+const SAVED_PASSWORD_STORAGE_KEY = "bonus_tracker_saved_password";
+const PENDING_PASSWORD_SESSION_KEY = "bonus_tracker_pending_password";
 
 type ExchangeSectionsProps = {
   balance: number;
@@ -37,14 +37,14 @@ export function ExchangeSections({
   const [confirmingRewardId, setConfirmingRewardId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Promote pending PIN (stored in sessionStorage at login) to localStorage
+  // Promote pending password (stored in sessionStorage at login) to localStorage
   // only when the user lands on the USER page, never for admin.
   useEffect(() => {
-    const pending = sessionStorage.getItem(PENDING_PIN_SESSION_KEY);
-    if (pending && /^\d{4}$/.test(pending)) {
-      localStorage.setItem(SAVED_PIN_STORAGE_KEY, pending);
+    const pending = sessionStorage.getItem(PENDING_PASSWORD_SESSION_KEY);
+    if (pending && pending.trim()) {
+      localStorage.setItem(SAVED_PASSWORD_STORAGE_KEY, pending);
     }
-    sessionStorage.removeItem(PENDING_PIN_SESSION_KEY);
+    sessionStorage.removeItem(PENDING_PASSWORD_SESSION_KEY);
   }, []);
 
   const handleConfirmExchange = async (rewardId: string) => {

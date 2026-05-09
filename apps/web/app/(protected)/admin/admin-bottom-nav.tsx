@@ -15,7 +15,7 @@ export function AdminBottomNav() {
   const isDashboard = pathname === "/admin";
   const isRewards = pathname.startsWith("/admin/rewards");
   const isPoints = pathname.startsWith("/admin/points");
-  const isConfig = pathname === "/admin/rewards/create";
+  const isSettings = pathname.startsWith("/admin/settings");
 
   return (
     <nav
@@ -59,13 +59,14 @@ export function AdminBottomNav() {
         </Link>
 
         <Link
-          href="/admin/rewards/create"
+          href="/admin/settings"
+          data-testid="admin-nav-settings"
           className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
-            isConfig ? ACTIVE_ITEM_CLASS : INACTIVE_ITEM_CLASS
+            isSettings ? ACTIVE_ITEM_CLASS : INACTIVE_ITEM_CLASS
           }`}
         >
           <Settings className="h-5 w-5" />
-          Конфіг
+          Безпека
         </Link>
 
         <form action={logoutAction} className="w-full">

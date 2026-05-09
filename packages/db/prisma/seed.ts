@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 // ---------------------------------------------------------------------------
-// Development PINs — these are only for local development.
+// Development passwords — these are only for local development.
 // Change them before any real deployment.
-// ADMIN PIN : 1234
-// USER PIN  : 0000
+// ADMIN password : 1234 (must be changed on first login)
+// USER password  : 0000
 // ---------------------------------------------------------------------------
 
 const prisma = new PrismaClient();
@@ -14,8 +14,8 @@ async function main() {
   console.log("🌱 Seeding database...");
 
   // --- Users ---
-  const adminPinHash = await bcrypt.hash("1234", 10);
-  const userPinHash = await bcrypt.hash("0000", 10);
+  const adminPasswordHash = await bcrypt.hash("1234", 10);
+  const userPasswordHash = await bcrypt.hash("0000", 10);
 
   const admin = await prisma.user.upsert({
     where: { id: "seed-admin" },
@@ -24,7 +24,8 @@ async function main() {
       id: "seed-admin",
       name: "Тато",
       role: "ADMIN",
-      pinHash: adminPinHash,
+      passwordHash: adminPasswordHash,
+      mustChangePassword: true,
     },
   });
 
@@ -35,7 +36,8 @@ async function main() {
       id: "seed-user",
       name: "Максим",
       role: "USER",
-      pinHash: userPinHash,
+      passwordHash: userPasswordHash,
+      mustChangePassword: false,
     },
   });
 

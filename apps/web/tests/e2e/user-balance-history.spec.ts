@@ -1,22 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { loginAsAdmin, loginAsUser } from "./helpers/auth";
 
 const uniqueText = (prefix: string) => `${prefix} ${Math.random().toString(36).slice(2, 10)}`;
-
-async function loginAsAdmin(page: import("@playwright/test").Page) {
-  await page.context().clearCookies();
-  await page.goto("/");
-  await page.getByTestId("pin-input").fill("1234");
-  await page.getByTestId("login-button").click();
-  await expect(page).toHaveURL("/admin");
-}
-
-async function loginAsUser(page: import("@playwright/test").Page) {
-  await page.context().clearCookies();
-  await page.goto("/");
-  await page.getByTestId("pin-input").fill("0000");
-  await page.getByTestId("login-button").click();
-  await expect(page).toHaveURL("/user");
-}
 
 test.describe("User balance and history", () => {
   test("shows current balance and history from server data", async ({ page }) => {

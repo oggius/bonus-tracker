@@ -1,21 +1,13 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { db } from "../../lib/db";
-import { getCurrentUser } from "../../lib/auth";
+import { requireAdminUser } from "../../lib/auth";
 import { getUserBalance } from "../../lib/balance";
 
 const POINT_ACTION_TYPES = new Set(["award", "deduct"]);
 
 async function assertAdmin() {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser || currentUser.role !== "ADMIN") {
-    redirect("/");
-  }
-
-  return currentUser;
+  return requireAdminUser();
 }
 
 export async function createPointsLogAction(formData: FormData) {

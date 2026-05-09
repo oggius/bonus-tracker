@@ -4,7 +4,7 @@ import { History, LogOut, ShoppingBag, Star } from "lucide-react";
 import { logoutAction } from "../../actions/auth";
 import { type UserScreen } from "./exchange-utils";
 
-const SAVED_PIN_STORAGE_KEY = "bonus_tracker_saved_pin";
+const SAVED_PASSWORD_STORAGE_KEY = "bonus_tracker_saved_password";
 
 type UserBottomNavProps = {
   activeScreen: UserScreen;
@@ -64,7 +64,7 @@ export function UserBottomNav({ activeScreen, onScreenChange }: UserBottomNavPro
           action={logoutAction}
           className="w-full"
           onSubmit={() => {
-            localStorage.removeItem(SAVED_PIN_STORAGE_KEY);
+            localStorage.removeItem(SAVED_PASSWORD_STORAGE_KEY);
           }}
         >
           <button

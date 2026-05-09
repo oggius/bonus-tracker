@@ -6,7 +6,8 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "role" "Role" NOT NULL,
-    "pinHash" TEXT NOT NULL,
+    "passwordHash" TEXT NOT NULL,
+    "mustChangePassword" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

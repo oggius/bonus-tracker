@@ -3,21 +3,21 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { findUserByPin, getRoleHomePath } from "../../lib/auth";
+import { findUserByPassword, getRoleHomePath } from "../../lib/auth";
 import { SESSION_COOKIE_NAME, signSessionToken } from "../../lib/session";
 
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
-export async function loginWithPinAction(formData: FormData) {
-  const pin = String(formData.get("pin") ?? "").trim();
+export async function loginAction(formData: FormData) {
+  const password = String(formData.get("password") ?? "");
 
-  if (!/^\d{4}$/.test(pin)) {
-    redirect("/?error=invalid_pin");
+  if (!password.trim()) {
+    redirect("/?error=invalid_credentials");
   }
 
-  const user = await findUserByPin(pin);
+  const user = await findUserByPassword(password);
   if (!user) {
-    redirect("/?error=invalid_pin");
+    redirect("/?error=invalid_credentials");
   }
 
   const token = await signSessionToken({
@@ -34,6 +34,10 @@ export async function loginWithPinAction(formData: FormData) {
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
+
+  if (user.role === "ADMIN" && user.mustChangePassword) {
+    redirect("/admin/settings");
+  }
 
   redirect(getRoleHomePath(user.role));
 }

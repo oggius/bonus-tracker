@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { PencilLine } from "lucide-react";
 
 import { Button, Card } from "@bonus-tracker/ui";
-import { getCurrentUser } from "../../../../../../lib/auth";
+import { requireAdminUser } from "../../../../../../lib/auth";
 import { db } from "../../../../../../lib/db";
 import { updateRewardAction } from "../../../../../actions/rewards";
 import { RewardForm } from "../../reward-form";
@@ -13,15 +13,7 @@ export default async function EditRewardPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/user");
-  }
+  await requireAdminUser();
 
   const { id } = await params;
 

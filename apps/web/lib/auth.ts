@@ -2,6 +2,7 @@ import "server-only";
 
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 import type { Role } from "@bonus-tracker/db";
 import { db } from "./db";
@@ -11,29 +12,32 @@ export type AuthUser = {
   id: string;
   name: string;
   role: Role;
+  mustChangePassword: boolean;
 };
 
 export function getRoleHomePath(role: Role) {
   return role === "ADMIN" ? "/admin" : "/user";
 }
 
-export async function findUserByPin(pin: string): Promise<AuthUser | null> {
+export async function findUserByPassword(password: string): Promise<AuthUser | null> {
   const users = await db.user.findMany({
     select: {
       id: true,
       name: true,
       role: true,
-      pinHash: true,
+      passwordHash: true,
+      mustChangePassword: true,
     },
   });
 
   for (const user of users) {
-    const matches = await bcrypt.compare(pin, user.pinHash);
+    const matches = await bcrypt.compare(password, user.passwordHash);
     if (matches) {
       return {
         id: user.id,
         name: user.name,
         role: user.role,
+        mustChangePassword: user.mustChangePassword,
       };
     }
   }
@@ -59,8 +63,29 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
       id: true,
       name: true,
       role: true,
+      mustChangePassword: true,
     },
   });
 
   return user;
+}
+
+type RequireAdminOptions = {
+  allowMustChangePassword?: boolean;
+};
+
+export async function requireAdminUser(
+  options: RequireAdminOptions = {}
+): Promise<AuthUser> {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser || currentUser.role !== "ADMIN") {
+    redirect("/");
+  }
+
+  if (currentUser.mustChangePassword && !options.allowMustChangePassword) {
+    redirect("/admin/settings");
+  }
+
+  return currentUser;
 }

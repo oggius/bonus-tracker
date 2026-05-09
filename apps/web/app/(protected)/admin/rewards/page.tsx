@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Gift, Plus, Settings } from "lucide-react";
 
-import { getCurrentUser } from "../../../../lib/auth";
+import { requireAdminUser } from "../../../../lib/auth";
 import { db } from "../../../../lib/db";
 import { Button } from "@bonus-tracker/ui";
 import { Card } from "@bonus-tracker/ui";
@@ -10,15 +9,7 @@ import { Badge } from "@bonus-tracker/ui";
 import { DeactivateRewardButton } from "./deactivate-reward-button";
 
 export default async function RewardsPage() {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/user");
-  }
+  await requireAdminUser();
 
   const rewards = await db.rewardDefinition.findMany({
     orderBy: { createdAt: "desc" },

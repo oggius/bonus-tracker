@@ -1,22 +1,13 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Gift, Plus } from "lucide-react";
 
 import { Button, Card } from "@bonus-tracker/ui";
-import { getCurrentUser } from "../../../../../lib/auth";
+import { requireAdminUser } from "../../../../../lib/auth";
 import { createRewardAction } from "../../../../actions/rewards";
 import { RewardForm } from "../reward-form";
 
 export default async function CreateRewardPage() {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/user");
-  }
+  await requireAdminUser();
 
   return (
     <section className="mx-auto w-full max-w-2xl space-y-6">

@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { History, ListChecks, Users } from "lucide-react";
 
 import { Button, Card } from "@bonus-tracker/ui";
 
-import { getCurrentUser } from "../../../../lib/auth";
+import { requireAdminUser } from "../../../../lib/auth";
 import {
   getPointsHistoryForAdmin,
   getUserBalanceForAdmin,
@@ -13,15 +12,7 @@ import {
 import { PointsForm } from "./points-form";
 
 export default async function AdminPointsPage() {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/user");
-  }
+  await requireAdminUser();
 
   const [users, history] = await Promise.all([
     getUsersForPointsAdmin(),

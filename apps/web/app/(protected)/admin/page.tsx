@@ -1,20 +1,11 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Gift, ListChecks, Plus, ShieldCheck } from "lucide-react";
 
-import { getCurrentUser } from "../../../lib/auth";
+import { requireAdminUser } from "../../../lib/auth";
 import { Button, Card } from "@bonus-tracker/ui";
 
 export default async function AdminPage() {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/user");
-  }
+  await requireAdminUser();
 
   return (
     <section className="space-y-6">
