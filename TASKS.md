@@ -22,7 +22,7 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 14: Implement the exchange request and approval flow
 - [x] Task 15: Add PWA support
 - [x] Task 16: Deployment and production configuration
-- [ ] Task 17: Final cleanup and migration closeout
+- [x] Task 17: Final cleanup and migration closeout
 
 ## Working Rules
 

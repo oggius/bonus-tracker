@@ -26,7 +26,7 @@ async function main() {
       role: "ADMIN",
       passwordHash: adminPasswordHash,
       mustChangePassword: true,
-    },
+    } as any,
   });
 
   const user = await prisma.user.upsert({
@@ -38,7 +38,7 @@ async function main() {
       role: "USER",
       passwordHash: userPasswordHash,
       mustChangePassword: false,
-    },
+    } as any,
   });
 
   console.log(`✅ Users: ${admin.name} (Admin), ${user.name} (User)`);
