@@ -11,8 +11,13 @@ export type SessionPayload = JWTPayload & {
 };
 
 function getSessionKey() {
-  const secret = process.env.SESSION_SECRET ?? "dev-only-session-secret-change-me";
-  return new TextEncoder().encode(secret);
+  const secret = process.env.SESSION_SECRET;
+  if (process.env.NODE_ENV === "production" && !secret) {
+    throw new Error("SESSION_SECRET must be set in production");
+  }
+
+  const resolvedSecret = secret ?? "dev-only-session-secret-change-me";
+  return new TextEncoder().encode(resolvedSecret);
 }
 
 export async function signSessionToken(payload: {

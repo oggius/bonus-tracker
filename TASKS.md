@@ -21,7 +21,7 @@ Mark a task complete only after its verification passes and the commit is create
 - [x] Task 13: Implement the user balance and history screens
 - [x] Task 14: Implement the exchange request and approval flow
 - [x] Task 15: Add PWA support
-- [ ] Task 16: Deployment and production configuration
+- [x] Task 16: Deployment and production configuration
 - [ ] Task 17: Final cleanup and migration closeout
 
 ## Working Rules
