@@ -4,6 +4,7 @@ export type {
   User,
   PointsLog,
   RewardDefinition,
+  Activity,
   Exchange,
   Role,
 } from "@prisma/client";

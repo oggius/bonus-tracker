@@ -10,6 +10,7 @@ import { HistoryScreen } from "./history-screen";
 import { ShopScreen } from "./shop-screen";
 import { UserBottomNav } from "./user-bottom-nav";
 import {
+  type ActivitySuggestionItem,
   type ExchangeItem,
   type HistoryItem,
   type PendingPointsRequestItem,
@@ -31,6 +32,7 @@ type ExchangeSectionsProps = {
   rewards: RewardItem[];
   exchanges: ExchangeItem[];
   pendingRequests: PendingPointsRequestItem[];
+  activitySuggestions: ActivitySuggestionItem[];
 };
 
 export function ExchangeSections({
@@ -39,6 +41,7 @@ export function ExchangeSections({
   rewards,
   exchanges,
   pendingRequests,
+  activitySuggestions,
 }: ExchangeSectionsProps) {
   const [screen, setScreen] = useState<UserScreen>("balance");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,6 +53,7 @@ export function ExchangeSections({
   const [stateRewards, setStateRewards] = useState(rewards);
   const [stateExchanges, setStateExchanges] = useState(exchanges);
   const [statePendingRequests, setStatePendingRequests] = useState(pendingRequests);
+  const [stateActivitySuggestions, setStateActivitySuggestions] = useState(activitySuggestions);
 
   const pollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const refreshInFlightRef = useRef(false);
@@ -92,6 +96,7 @@ export function ExchangeSections({
         rewards: RewardItem[];
         exchanges: ExchangeItem[];
         pendingRequests: PendingPointsRequestItem[];
+        activitySuggestions: ActivitySuggestionItem[];
       };
 
       setStateBalance(nextState.balance);
@@ -99,6 +104,7 @@ export function ExchangeSections({
       setStateRewards(nextState.rewards);
       setStateExchanges(nextState.exchanges);
       setStatePendingRequests(nextState.pendingRequests);
+      setStateActivitySuggestions(nextState.activitySuggestions);
       setError(null);
     } catch {
       if (showIndicator) {
@@ -187,6 +193,7 @@ export function ExchangeSections({
         {screen === "add" && (
           <AddPointsScreen
             pendingRequests={statePendingRequests}
+            activitySuggestions={stateActivitySuggestions}
             isSubmitting={isSubmitting}
             onSubmitRequest={handleCreatePointsRequest}
           />

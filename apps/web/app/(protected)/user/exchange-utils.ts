@@ -29,6 +29,13 @@ export type PendingPointsRequestItem = {
   createdAt: string;
 };
 
+export type ActivitySuggestionItem = {
+  id: string;
+  description: string;
+  points: number;
+  order: number;
+};
+
 export type UserScreen = "balance" | "add" | "shop" | "history";
 
 export const SHOP_CARD_STYLES = [

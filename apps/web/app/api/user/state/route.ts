@@ -17,7 +17,7 @@ export async function GET() {
     return NextResponse.json({ error: "Недостатньо прав доступу" }, { status: 403 });
   }
 
-  const [balance, history, rewards, exchanges, pendingRequests] = await Promise.all([
+  const [balance, history, rewards, exchanges, pendingRequests, activities] = await Promise.all([
     getUserBalance(currentUser.id),
     getUserHistory(currentUser.id),
     db.rewardDefinition.findMany({
@@ -58,6 +58,15 @@ export async function GET() {
       },
       orderBy: { createdAt: "desc" },
     }),
+    db.activity.findMany({
+      select: {
+        id: true,
+        description: true,
+        points: true,
+        order: true,
+      },
+      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+    }),
   ]);
 
   return NextResponse.json({
@@ -81,6 +90,12 @@ export async function GET() {
       amount: request.delta,
       description: request.description,
       createdAt: request.createdAt.toISOString(),
+    })),
+    activitySuggestions: activities.map((activity) => ({
+      id: activity.id,
+      description: activity.description,
+      points: activity.points,
+      order: activity.order,
     })),
   });
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gift, ListChecks, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { Activity, Gift, ListChecks, LogOut, Settings, ShieldCheck } from "lucide-react";
 
 import { logoutAction } from "../../actions/auth";
 
@@ -13,6 +13,7 @@ export function AdminBottomNav() {
   const pathname = usePathname();
 
   const isDashboard = pathname === "/admin";
+  const isActivities = pathname.startsWith("/admin/activities");
   const isRewards = pathname.startsWith("/admin/rewards");
   const isPoints = pathname.startsWith("/admin/points");
   const isSettings = pathname.startsWith("/admin/settings");
@@ -27,7 +28,7 @@ export function AdminBottomNav() {
         bottom: 0,
       }}
     >
-      <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 px-3 py-2">
+      <div className="mx-auto grid w-full max-w-3xl grid-cols-6 gap-2 px-3 py-2">
         <Link
           href="/admin"
           className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
@@ -36,6 +37,17 @@ export function AdminBottomNav() {
         >
           <ShieldCheck className="h-5 w-5" />
           Панель
+        </Link>
+
+        <Link
+          href="/admin/activities"
+          data-testid="admin-nav-activities"
+          className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
+            isActivities ? ACTIVE_ITEM_CLASS : INACTIVE_ITEM_CLASS
+          }`}
+        >
+          <Activity className="h-5 w-5" />
+          Активності
         </Link>
 
         <Link

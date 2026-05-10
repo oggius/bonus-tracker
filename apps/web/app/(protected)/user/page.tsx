@@ -17,7 +17,7 @@ export default async function UserPage() {
     redirect("/admin");
   }
 
-  const [balance, history, rewards, exchanges, pendingRequests] = await Promise.all([
+  const [balance, history, rewards, exchanges, pendingRequests, activities] = await Promise.all([
     getUserBalance(currentUser.id),
     getUserHistory(currentUser.id),
     db.rewardDefinition.findMany({
@@ -45,6 +45,15 @@ export default async function UserPage() {
       orderBy: { createdAt: "desc" },
     }),
     getPendingPointsRequestsForUser(),
+    db.activity.findMany({
+      select: {
+        id: true,
+        description: true,
+        points: true,
+        order: true,
+      },
+      orderBy: [{ order: "asc" }, { createdAt: "asc" }],
+    }),
   ]);
 
   const exchangeItems = exchanges.map((exchange) => ({
@@ -69,6 +78,13 @@ export default async function UserPage() {
     createdAt: request.createdAt.toISOString(),
   }));
 
+  const activitySuggestionItems = activities.map((activity) => ({
+    id: activity.id,
+    description: activity.description,
+    points: activity.points,
+    order: activity.order,
+  }));
+
   return (
     <ExchangeSections
       balance={balance}
@@ -76,6 +92,7 @@ export default async function UserPage() {
       rewards={rewards}
       exchanges={exchangeItems}
       pendingRequests={pendingRequestItems}
+      activitySuggestions={activitySuggestionItems}
     />
   );
 }

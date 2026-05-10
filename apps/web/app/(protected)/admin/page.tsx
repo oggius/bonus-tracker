@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Gift, ListChecks, Plus, ShieldCheck } from "lucide-react";
+import { Activity, Gift, ListChecks, Plus, ShieldCheck } from "lucide-react";
 
 import { requireAdminUser } from "../../../lib/auth";
 import { Button, Card } from "@bonus-tracker/ui";
@@ -15,15 +15,55 @@ export default async function AdminPage() {
             <ShieldCheck className="h-8 w-8 text-blue-600" />
           </div>
           <h2 className="text-4xl font-semibold text-gray-900">Адмін-панель</h2>
-          <p className="mt-2 text-lg text-gray-600">Керування нагородами, очками та налаштуваннями.</p>
+          <p className="mt-2 text-lg text-gray-600">Керування активностями, нагородами, очками та налаштуваннями.</p>
         </div>
       </Card>
 
       <div className="grid gap-4">
         <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
+              <ListChecks className="h-4 w-4" />
+              Операції
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900">Управління очками</h3>
+            <p className="text-gray-600">Нараховуйте або списуйте очки з серверною валідацією та історією.</p>
+          </div>
+
+          <div className="mt-4">
+            <Link href="/admin/points">
+              <Button variant="outline" data-testid="manage-points-button">Керувати очками</Button>
+            </Link>
+          </div>
+        </Card>
+
+        <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-700">
+              <Activity className="h-4 w-4" />
+              Активності
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900">Управління активностями</h3>
+            <p className="text-gray-600">Керуйте підказками для форми запиту очок та змінюйте їх порядок.</p>
+          </div>
+
+          <div className="mt-4 flex gap-3">
+            <Link href="/admin/activities/create">
+              <Button className="gap-2" data-testid="create-activity-button">
+                <Plus className="h-4 w-4" />
+                Додати активність
+              </Button>
+            </Link>
+            <Link href="/admin/activities">
+              <Button variant="outline">До списку</Button>
+            </Link>
+          </div>
+        </Card>
+
+        <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-sm text-amber-700">
+              <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-sm text-sky-700">
                 <Gift className="h-4 w-4" />
                 Нагороди
               </div>
@@ -45,23 +85,6 @@ export default async function AdminPage() {
             </Link>
             <Link href="/admin/rewards">
               <Button variant="outline">До списку</Button>
-            </Link>
-          </div>
-        </Card>
-
-        <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
-              <ListChecks className="h-4 w-4" />
-              Операції
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-900">Управління очками</h3>
-            <p className="text-gray-600">Нараховуйте або списуйте очки з серверною валідацією та історією.</p>
-          </div>
-
-          <div className="mt-4">
-            <Link href="/admin/points">
-              <Button variant="outline" data-testid="manage-points-button">Керувати очками</Button>
             </Link>
           </div>
         </Card>

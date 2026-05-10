@@ -10,6 +10,35 @@ const readUserBalance = async (page: Page) => {
 };
 
 test.describe("User balance and history", () => {
+  test("activity helper prefills form and pending block is hidden when no requests", async ({ page }) => {
+    const activityDescription = uniqueText("Популярна активність");
+
+    await loginAsAdmin(page);
+    await page.goto("/admin/activities/create");
+    await page.getByTestId("activity-description-input").fill(activityDescription);
+    await page.getByTestId("activity-points-input").fill("7");
+    await page.getByTestId("activity-submit-button").click();
+
+    await loginAsUser(page);
+    await page.getByTestId("user-nav-add").click();
+
+    await expect(page.getByTestId("user-pending-requests-list")).toHaveCount(0);
+
+    // Expand the activities section by clicking on the title
+    await page.getByTestId("user-activities-helper").click();
+
+    const activitySuggestion = page
+      .locator('[data-testid^="activity-suggestion-"]')
+      .filter({ hasText: activityDescription })
+      .first();
+
+    await expect(activitySuggestion).toBeVisible();
+    await activitySuggestion.click();
+
+    await expect(page.getByTestId("user-add-points-description-input")).toHaveValue(activityDescription);
+    await expect(page.getByTestId("user-add-points-amount-input")).toHaveValue("7");
+  });
+
   test("shows current balance and history from server data", async ({ page }) => {
     const description = uniqueText("User history entry");
 
