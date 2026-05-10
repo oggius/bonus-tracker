@@ -86,7 +86,7 @@ test.describe("User balance and history", () => {
       .filter({ hasText: description })
       .first();
 
-    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-nav-daily-todo").click();
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
     await page.getByTestId("user-nav-history").click();
     await expect(historyEntry).toBeVisible();
@@ -98,7 +98,7 @@ test.describe("User balance and history", () => {
       .filter({ hasText: description })
       .first();
 
-    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-nav-daily-todo").click();
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
     await page.getByTestId("user-nav-history").click();
     await expect(persistedEntry).toBeVisible();
@@ -120,7 +120,7 @@ test.describe("User balance and history", () => {
       .first();
 
     await expect(userPendingRequest).toBeVisible();
-    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-nav-daily-todo").click();
     expect(await readUserBalance(page)).toBe(initialBalance);
 
     await loginAsAdmin(page);
@@ -141,7 +141,7 @@ test.describe("User balance and history", () => {
       page.locator('[data-testid^="user-pending-request-"]').filter({ hasText: description }).first()
     ).toHaveCount(0);
 
-    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-nav-daily-todo").click();
     expect(await readUserBalance(page)).toBe(initialBalance + 4);
     await page.getByTestId("user-nav-history").click();
     await expect(
@@ -221,7 +221,7 @@ test.describe("User balance and history", () => {
       await adminContext.close();
     }
 
-    await page.getByTestId("user-nav-balance").click();
+    await page.getByTestId("user-nav-daily-todo").click();
     await page.getByTestId("user-current-balance").click();
 
     await expect

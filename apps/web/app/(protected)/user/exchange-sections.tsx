@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPointsRequestAction } from "../../actions/points";
 import { createExchangeAction } from "../../actions/exchanges";
 import { AddPointsScreen } from "./add-points-screen";
-import { BalanceScreen } from "./balance-screen";
+import { DaySummaryScreen } from "./day-summary-screen";
 import { HistoryScreen } from "./history-screen";
 import { ShopScreen } from "./shop-screen";
 import { UserBottomNav } from "./user-bottom-nav";
@@ -43,7 +43,7 @@ export function ExchangeSections({
   pendingRequests,
   activitySuggestions,
 }: ExchangeSectionsProps) {
-  const [screen, setScreen] = useState<UserScreen>("balance");
+  const [screen, setScreen] = useState<UserScreen>("daily-todo");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [confirmingRewardId, setConfirmingRewardId] = useState<string | null>(null);
@@ -180,13 +180,13 @@ export function ExchangeSections({
       style={{ backgroundColor: "#f3f4f6" }}
     >
       <div className="mx-auto w-full max-w-3xl flex-1 px-4 pb-6 pt-6 md:px-6">
-        {screen === "balance" && (
-          <BalanceScreen
+        {screen === "daily-todo" && (
+          <DaySummaryScreen
             balance={stateBalance}
             pendingPointsTotal={pendingPointsTotal}
-            onNavigateToAdd={() => setScreen("add")}
             onManualRefresh={() => refreshState({ showIndicator: true })}
             isRefreshing={isRefreshing}
+            refreshState={refreshState}
           />
         )}
 

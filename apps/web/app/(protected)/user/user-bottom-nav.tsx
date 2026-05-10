@@ -1,6 +1,6 @@
 "use client";
 
-import { History, LogOut, PlusCircle, ShoppingBag, Star } from "lucide-react";
+import { History, LogOut, PlusCircle, ShoppingBag, CheckSquare2 } from "lucide-react";
 import { logoutAction } from "../../actions/auth";
 import { type UserScreen } from "./exchange-utils";
 
@@ -25,16 +25,16 @@ export function UserBottomNav({ activeScreen, onScreenChange }: UserBottomNavPro
       <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2 px-3 py-2">
         <button
           type="button"
-          onClick={() => onScreenChange("balance")}
-          data-testid="user-nav-balance"
+          onClick={() => onScreenChange("daily-todo")}
+          data-testid="user-nav-daily-todo"
           className={`flex flex-col items-center rounded-xl px-2 py-2 text-xs transition ${
-            activeScreen === "balance"
+            activeScreen === "daily-todo"
               ? "bg-gray-100 text-gray-900"
               : "text-gray-500"
           }`}
         >
-          <Star className="h-5 w-5" />
-          Баланс
+          <CheckSquare2 className="h-5 w-5" />
+          Мій день
         </button>
         <button
           type="button"

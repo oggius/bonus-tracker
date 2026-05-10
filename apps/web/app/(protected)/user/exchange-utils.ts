@@ -36,7 +36,7 @@ export type ActivitySuggestionItem = {
   order: number;
 };
 
-export type UserScreen = "balance" | "add" | "shop" | "history";
+export type UserScreen = "daily-todo" | "add" | "shop" | "history";
 
 export const SHOP_CARD_STYLES = [
   {
