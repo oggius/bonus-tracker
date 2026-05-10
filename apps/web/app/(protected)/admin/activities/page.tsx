@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Activity, Plus } from "lucide-react";
+import { Activity } from "lucide-react";
 
 import { Button, Card } from "@bonus-tracker/ui";
 
 import { requireAdminUser } from "../../../../lib/auth";
 import { getActivitiesForAdmin } from "../../../actions/activities";
 import { ActivityReorderList } from "./activity-reorder-list";
+import { CreateActivityLinkButton } from "./create-activity-link-button";
 
 export default async function AdminActivitiesPage() {
   await requireAdminUser();
@@ -27,12 +28,7 @@ export default async function AdminActivitiesPage() {
       <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
         <div className="mb-4 flex items-center justify-between gap-4">
           <h3 className="text-2xl font-semibold text-gray-900">Список активностей</h3>
-          <Link href="/admin/activities/create">
-            <Button className="gap-2" data-testid="create-activity-link">
-              <Plus className="h-4 w-4" />
-              Нова активність
-            </Button>
-          </Link>
+          <CreateActivityLinkButton />
         </div>
 
         {activities.length ? (

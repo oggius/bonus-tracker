@@ -8,9 +8,16 @@ import { deleteActivityAction } from "../../../actions/activities";
 type DeleteActivityButtonProps = {
   activityId: string;
   description: string;
+  disabled?: boolean;
+  onPendingChange?: (pending: boolean) => void;
 };
 
-export function DeleteActivityButton({ activityId, description }: DeleteActivityButtonProps) {
+export function DeleteActivityButton({
+  activityId,
+  description,
+  disabled = false,
+  onPendingChange,
+}: DeleteActivityButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -20,12 +27,14 @@ export function DeleteActivityButton({ activityId, description }: DeleteActivity
     }
 
     setIsDeleting(true);
+    onPendingChange?.(true);
 
     try {
       await deleteActivityAction(activityId);
       window.location.reload();
     } finally {
       setIsDeleting(false);
+      onPendingChange?.(false);
     }
   };
 
@@ -35,7 +44,7 @@ export function DeleteActivityButton({ activityId, description }: DeleteActivity
       variant="ghost"
       className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
       onClick={handleDelete}
-      disabled={isDeleting}
+      disabled={isDeleting || disabled}
       data-testid={`delete-activity-${activityId}`}
     >
       {isDeleting ? (

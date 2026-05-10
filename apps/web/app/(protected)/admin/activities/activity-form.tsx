@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button, Input, Label } from "@bonus-tracker/ui";
@@ -22,27 +22,28 @@ export function ActivityForm({
   submitLabel = "Додати активність",
 }: ActivityFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsLoading(true);
     setError(null);
 
-    try {
-      await action(formData);
-      router.push("/admin/activities");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Сталася помилка");
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        await action(formData);
+        router.push("/admin/activities");
+        router.refresh();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Сталася помилка");
+      }
+    });
   };
 
   return (
     <form
       action={handleSubmit}
-      className={`loading-section space-y-6 ${isLoading ? "loading-section--busy" : ""}`}
+      className={`loading-section space-y-6 ${isPending ? "loading-section--busy" : ""}`}
+      aria-busy={isPending}
     >
       {initialData?.id ? <input type="hidden" name="id" value={initialData.id} /> : null}
 
@@ -55,7 +56,7 @@ export function ActivityForm({
           placeholder="Наприклад: прибрав кімнату"
           defaultValue={initialData?.description ?? ""}
           required
-          disabled={isLoading}
+          disabled={isPending}
           data-testid="activity-description-input"
         />
       </div>
@@ -69,7 +70,7 @@ export function ActivityForm({
           placeholder="Наприклад: 5"
           defaultValue={initialData?.points ?? ""}
           required
-          disabled={isLoading}
+          disabled={isPending}
           min="1"
           step="1"
           data-testid="activity-points-input"
@@ -82,12 +83,12 @@ export function ActivityForm({
 
       <Button
         type="submit"
-        disabled={isLoading}
+        disabled={isPending}
         data-testid="activity-submit-button"
         className="text-white"
         style={{ backgroundImage: "linear-gradient(90deg, #facc15 0%, #fb923c 100%)" }}
       >
-        {isLoading ? (
+        {isPending ? (
           <>
             <LoadingSpinner />
             Обробка...

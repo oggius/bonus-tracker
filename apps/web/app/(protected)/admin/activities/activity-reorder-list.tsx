@@ -7,6 +7,7 @@ import { GripVertical, Pencil } from "lucide-react";
 
 import { Button } from "@bonus-tracker/ui";
 import { reorderActivitiesAction } from "../../../actions/activities";
+import { LoadingSpinner } from "../../../components/loading-spinner";
 import { DeleteActivityButton } from "./delete-activity-button";
 
 type ActivityItem = {
@@ -40,9 +41,12 @@ export function ActivityReorderList({ activities }: ActivityReorderListProps) {
   const [items, setItems] = useState(activities);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const isBusy = isSaving || isDeleting;
 
   const handleDrop = async (targetId: string) => {
-    if (!draggedId || draggedId === targetId) {
+    if (isBusy || !draggedId || draggedId === targetId) {
       setDraggedId(null);
       return;
     }
@@ -62,15 +66,26 @@ export function ActivityReorderList({ activities }: ActivityReorderListProps) {
   };
 
   return (
-    <div className="space-y-2" data-testid="activity-reorder-list">
+    <div
+      className={`loading-section space-y-2 ${isBusy ? "loading-section--busy" : ""}`}
+      data-testid="activity-reorder-list"
+    >
+      {isBusy ? (
+        <div className="mb-2 inline-flex items-center gap-2 text-sm text-amber-700">
+          <LoadingSpinner />
+          Застосовую зміни...
+        </div>
+      ) : null}
         {items.map((activity) => (
           <div
             key={activity.id}
-            draggable={!isSaving}
+            draggable={!isBusy}
             onDragStart={() => setDraggedId(activity.id)}
             onDragOver={(event) => event.preventDefault()}
             onDrop={() => handleDrop(activity.id)}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3"
+            className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 ${
+              isBusy ? "pointer-events-none opacity-70" : ""
+            }`}
             data-testid={`activity-row-${activity.id}`}
           >
             <div className="flex min-w-0 items-center gap-3">
@@ -83,12 +98,17 @@ export function ActivityReorderList({ activities }: ActivityReorderListProps) {
 
             <div className="flex items-center gap-2">
               <Link href={`/admin/activities/${activity.id}/edit`}>
-                <Button type="button" variant="outline" className="gap-2">
+                <Button type="button" variant="outline" className="gap-2" disabled={isBusy}>
                   <Pencil className="h-4 w-4" />
                   Редагувати
                 </Button>
               </Link>
-              <DeleteActivityButton activityId={activity.id} description={activity.description} />
+              <DeleteActivityButton
+                activityId={activity.id}
+                description={activity.description}
+                disabled={isBusy}
+                onPendingChange={setIsDeleting}
+              />
             </div>
           </div>
         ))}
