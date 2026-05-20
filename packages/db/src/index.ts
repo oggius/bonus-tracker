@@ -6,5 +6,6 @@ export type {
   RewardDefinition,
   Activity,
   Exchange,
+  PushSubscription,
   Role,
 } from "@prisma/client";

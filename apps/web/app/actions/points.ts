@@ -1,8 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { db } from "../../lib/db";
 import { getCurrentUser, requireAdminUser } from "../../lib/auth";
 import { getUserBalance } from "../../lib/balance";
+import { sendPushToAdmins } from "../../lib/web-push";
 
 const POINT_ACTION_TYPES = new Set(["award", "deduct"]);
 
@@ -99,6 +102,18 @@ export async function createPointsRequestAction(formData: FormData) {
       initiatedBy: "USER",
     },
   });
+
+  revalidatePath("/admin", "layout");
+
+  try {
+    await sendPushToAdmins({
+      title: "Новий запит на очки",
+      body: `${currentUser.name} просить ${amount} очок: ${description}`,
+      url: "/admin/points",
+    });
+  } catch (error) {
+    console.error("[points] failed to send push notification", error);
+  }
 }
 
 export async function approvePointsRequestAction(requestId: string) {
@@ -124,6 +139,8 @@ export async function approvePointsRequestAction(requestId: string) {
       createdById: currentUser.id,
     },
   });
+
+  revalidatePath("/admin", "layout");
 }
 
 export async function rejectPointsRequestAction(requestId: string) {
@@ -149,6 +166,8 @@ export async function rejectPointsRequestAction(requestId: string) {
       createdById: currentUser.id,
     },
   });
+
+  revalidatePath("/admin", "layout");
 }
 
 export async function getPendingPointsRequestsForUser() {

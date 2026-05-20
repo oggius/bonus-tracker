@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { KeyRound, Lock } from "lucide-react";
+import { Bell, KeyRound, Lock } from "lucide-react";
 
 import { Card } from "@bonus-tracker/ui";
 import { requireAdminUser } from "../../../../lib/auth";
 import { db } from "../../../../lib/db";
 import { AdminPasswordForm, UserPasswordForm } from "./settings-forms";
+import { PushToggle } from "./push-toggle";
 
 export default async function AdminSettingsPage() {
   const currentUser = await requireAdminUser({ allowMustChangePassword: true });
@@ -47,6 +48,14 @@ export default async function AdminSettingsPage() {
           Користувач
         </div>
         <UserPasswordForm userId={userAccount.id} userName={userAccount.name} />
+      </Card>
+
+      <Card className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm text-emerald-700">
+          <Bell className="h-4 w-4" />
+          Сповіщення
+        </div>
+        <PushToggle vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} />
       </Card>
     </section>
   );

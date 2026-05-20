@@ -9,7 +9,11 @@ import { logoutAction } from "../../actions/auth";
 const ACTIVE_ITEM_CLASS = "bg-gray-100 text-gray-900";
 const INACTIVE_ITEM_CLASS = "text-gray-500";
 
-export function AdminBottomNav() {
+type AdminBottomNavProps = {
+  pendingRequestsCount?: number;
+};
+
+export function AdminBottomNav({ pendingRequestsCount = 0 }: AdminBottomNavProps) {
   const pathname = usePathname();
 
   const isDashboard = pathname === "/admin";
@@ -17,6 +21,7 @@ export function AdminBottomNav() {
   const isRewards = pathname.startsWith("/admin/rewards");
   const isPoints = pathname.startsWith("/admin/points");
   const isSettings = pathname.startsWith("/admin/settings");
+  const badgeLabel = pendingRequestsCount > 99 ? "99+" : String(pendingRequestsCount);
 
   return (
     <nav
@@ -66,7 +71,17 @@ export function AdminBottomNav() {
             isPoints ? ACTIVE_ITEM_CLASS : INACTIVE_ITEM_CLASS
           }`}
         >
-          <ListChecks className="h-5 w-5" />
+          <span className="relative inline-flex">
+            <ListChecks className="h-5 w-5" />
+            {pendingRequestsCount > 0 ? (
+              <span
+                className="absolute -right-2 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-none text-white"
+                data-testid="admin-nav-pending-badge"
+              >
+                {badgeLabel}
+              </span>
+            ) : null}
+          </span>
           Операції
         </Link>
 

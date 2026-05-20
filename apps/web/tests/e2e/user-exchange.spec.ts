@@ -64,18 +64,20 @@ test.describe("User direct exchange flow", () => {
     await awardPointsAsAdmin(page, 5, seedDescription);
 
     await loginAsUser(page);
+    // Ensure on "Мій день" screen (default)
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    // Go to shop and exchange
+    await page.getByTestId("user-nav-shop").click();
     await exchangeRewardAsUser(page, rewardId);
-
-    await page.getByTestId("user-nav-balance").click();
+    // After exchange, check balance on "Мій день"
+    await page.getByTestId("user-nav-daily-todo").click();
     await expect(page.getByTestId("user-current-balance")).toBeVisible();
+    // Check history
     await page.getByTestId("user-nav-history").click();
-
     const exchangeHistoryEntry = page
       .locator('[data-testid^="user-history-item-"]')
       .filter({ hasText: `Обмін на: ${rewardName}` })
       .first();
-
     await expect(exchangeHistoryEntry).toBeVisible();
     await expect(exchangeHistoryEntry).toContainText("-2");
   });

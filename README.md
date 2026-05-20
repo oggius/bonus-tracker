@@ -17,12 +17,18 @@ Create a root `.env` file (or configure Vercel project environment variables) wi
 - `DATABASE_URL`: PostgreSQL connection string used by Prisma.
 - `SESSION_SECRET`: secret key used to sign session JWT cookies.
 - `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY`: stable Next.js Server Actions encryption key.
+- `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY`: VAPID keypair used by the server to sign web-push notifications.
+- `VAPID_SUBJECT`: contact for push services (e.g. `mailto:admin@example.com`).
+- `NEXT_PUBLIC_VAPID_PUBLIC_KEY`: same value as `VAPID_PUBLIC_KEY`, exposed to the browser so the PWA can subscribe.
+
+Generate a VAPID keypair with: `npx web-push generate-vapid-keys`.
 
 Notes:
 
 - For local development, use your local Postgres URL.
 - For Vercel preview/production, use your managed PostgreSQL URL (for example, Neon).
 - `SESSION_SECRET` must be set in production.
+- If the VAPID variables are not set, push notifications are silently disabled — the rest of the app keeps working.
 
 ## Local Development
 
